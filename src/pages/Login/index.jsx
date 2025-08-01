@@ -7,7 +7,7 @@ import {
   Link
 } from 'react-router-dom'
 import useAuthStore from '@/store/authStore'
-import './Login.less'
+import './index.less'
 
 const Login = () => {
   const navigate = useNavigate()

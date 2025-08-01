@@ -1,0 +1,20 @@
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 20px;
+  padding-bottom: 80px;
+}
+.home-page .home-content {
+  text-align: center;
+  padding: 40px 20px;
+}
+.home-page .home-content h1 {
+  font-size: 24px;
+  color: #166534;
+  margin-bottom: 16px;
+}
+.home-page .home-content p {
+  font-size: 16px;
+  color: #16a34a;
+  opacity: 0.8;
+}

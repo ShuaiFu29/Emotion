@@ -7,7 +7,7 @@ import {
   Link
 } from 'react-router-dom'
 import useAuthStore from '@/store/authStore'
-import './Register.less'
+import './index.less'
 
 const Register = () => {
   const navigate = useNavigate()

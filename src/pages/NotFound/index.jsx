@@ -1,7 +1,7 @@
 import {
   useNavigate
 } from 'react-router-dom'
-import './NotFound.less'
+import './index.less'
 
 const NotFound = () => {
   const navigate = useNavigate()

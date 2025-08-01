@@ -4,34 +4,25 @@ import {
 } from 'react'
 import {
   Navigate,
-  useLocation
+  useLocation,
+  Outlet
 } from 'react-router-dom'
 import useAuthStore from '@/store/authStore'
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, token, verifyToken, initAuth } = useAuthStore()
+const ProtectedRoute = () => {
+  const { isAuthenticated, initAuth } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
 
   useEffect(() => {
     const checkAuth = async () => {
-      // 如果没有token，直接结束加载
-      if (!token) {
-        initAuth()
-        setIsLoading(false)
-        return
-      }
-
-      // 如果有token但未认证，验证token
-      if (token && !isAuthenticated) {
-        await verifyToken()
-      }
-
+      // 初始化认证状态（包括验证token）
+      await initAuth()
       setIsLoading(false)
     }
 
     checkAuth()
-  }, [token, isAuthenticated, verifyToken, initAuth])
+  }, [initAuth])
 
   // 显示加载状态
   if (isLoading) {
@@ -39,7 +30,7 @@ const ProtectedRoute = ({ children }) => {
       <div className="loading-container">
         <div className="loading-spinner"></div>
         <p>验证中...</p>
-        <style jsx>{`
+        <style>{`
           .loading-container {
             display: flex;
             flex-direction: column;
@@ -80,7 +71,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   // 如果已认证，渲染子组件
-  return children
+  return <Outlet />
 }
 
 export default ProtectedRoute
