@@ -15,20 +15,20 @@ const NotFound = () => {
   }
 
   return (
-    <div className="not-found">
+    <main className="not-found">
       <div className="not-found-container">
-        <div className="not-found-icon">
+        <header className="not-found-icon">
           <div className="icon-404">404</div>
-        </div>
+        </header>
 
-        <div className="not-found-content">
-          <h2 className="not-found-title">页面走丢了</h2>
+        <section className="not-found-content">
+          <h1 className="not-found-title">页面走丢了</h1>
           <p className="not-found-description">
             抱歉，您访问的页面不存在或已被移除
           </p>
-        </div>
+        </section>
 
-        <div className="not-found-actions">
+        <nav className="not-found-actions">
           <button
             className="btn btn-secondary"
             onClick={handleGoBack}
@@ -41,10 +41,10 @@ const NotFound = () => {
           >
             回到首页
           </button>
-        </div>
+        </nav>
       </div>
-    </div>
+    </main>
   )
 }
 
-export default NotFound 
+export default NotFound

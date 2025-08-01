@@ -145,10 +145,39 @@
   }
 }
 
-// 响应式设计
+// 移动端适配
+@media (max-width: 768px) {
+  .not-found {
+    .not-found-icon .icon-404 {
+      font-size: 90px;
+    }
+    
+    .not-found-content .not-found-title {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
+    
+    .not-found-content .not-found-description {
+      font-size: 16px;
+    }
+    
+    .not-found-actions {
+      flex-direction: column;
+      gap: 15px;
+      
+      .btn {
+        width: 100%;
+        max-width: 280px;
+        padding: 16px;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
 @media (max-width: 480px) {
   .not-found {
-    padding: 15px;
+    padding: 20px;
     
     .not-found-icon .icon-404 {
       font-size: 80px;
@@ -156,15 +185,22 @@
     
     .not-found-content .not-found-title {
       font-size: 24px;
+      margin-bottom: 12px;
     }
     
     .not-found-content .not-found-description {
       font-size: 15px;
+      line-height: 1.6;
     }
     
-    .not-found-actions .btn {
-      padding: 14px 28px;
-      font-size: 16px;
+    .not-found-actions {
+      gap: 12px;
+      
+      .btn {
+        padding: 14px 28px;
+        font-size: 16px;
+        border-radius: 20px;
+      }
     }
   }
 }
