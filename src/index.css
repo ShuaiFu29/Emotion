@@ -2,3 +2,18 @@
   margin: 0;
   padding: 0;
 }
+
+/* 隐藏滚动条 */
+html, body {
+  overflow: hidden;
+}
+
+/* 对于需要滚动的容器，隐藏滚动条但保持滚动功能 */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}

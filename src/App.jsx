@@ -17,6 +17,7 @@ const Register = lazy(() => import('@/pages/Register'))
 const Home = lazy(() => import('@/pages/Home'))
 const Chat = lazy(() => import('@/pages/Chat'))
 const Account = lazy(() => import('@/pages/Account'))
+const Publish = lazy(() => import('@/pages/Publish'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 import Loading from '@/components/Loading'
 import './App.css'
@@ -43,6 +44,8 @@ function App() {
             <Route path='/chat' element={<Chat />} />
             <Route path='/account' element={<Account />} />
           </Route>
+          {/* Publish页面不需要底部导航栏 */}
+          <Route path='/publish' element={<Publish />} />
         </Route>
         <Route path="/notFound" element={<NotFound />} />
         <Route path="*" element={<Navigate to="/notFound" replace />} />
