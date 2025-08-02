@@ -14,7 +14,7 @@ const generateToken = (user) => {
     id: user.id,
     username: user.username,
     email: user.email,
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天过期
+    exp: Date.now() + 24 * 60 * 60 * 1000 // 24小时过期
   }
   return btoa(JSON.stringify(payload))
 }
@@ -39,10 +39,10 @@ export default [
     method: 'post',
     response: ({ body }) => {
       const { email, password } = body
-      
+
       // 查找用户
       const user = users.find(u => u.email === email && u.password === password)
-      
+
       if (!user) {
         return {
           code: 401,
@@ -50,10 +50,10 @@ export default [
           data: null
         }
       }
-      
+
       // 生成token
       const token = generateToken(user)
-      
+
       return {
         code: 200,
         message: '登录成功',
@@ -68,14 +68,14 @@ export default [
       }
     }
   },
-  
+
   // 注册接口
   {
     url: '/api/auth/register',
     method: 'post',
     response: ({ body }) => {
       const { username, email, password } = body
-      
+
       // 检查邮箱是否已存在
       const existingUser = users.find(u => u.email === email)
       if (existingUser) {
@@ -85,7 +85,7 @@ export default [
           data: null
         }
       }
-      
+
       // 创建新用户
       const newUser = {
         id: users.length + 1,
@@ -93,12 +93,12 @@ export default [
         email,
         password // 实际项目中应该加密
       }
-      
+
       users.push(newUser)
-      
+
       // 生成token
       const token = generateToken(newUser)
-      
+
       return {
         code: 200,
         message: '注册成功',
@@ -113,7 +113,7 @@ export default [
       }
     }
   },
-  
+
   // 验证token接口
   {
     url: '/api/auth/verify',
@@ -127,10 +127,10 @@ export default [
           data: null
         }
       }
-      
+
       const token = authorization.substring(7)
       const payload = verifyToken(token)
-      
+
       if (!payload) {
         return {
           code: 401,
@@ -138,7 +138,7 @@ export default [
           data: null
         }
       }
-      
+
       // 查找用户
       const user = users.find(u => u.id === payload.id)
       if (!user) {
@@ -148,7 +148,7 @@ export default [
           data: null
         }
       }
-      
+
       return {
         code: 200,
         message: 'Token验证成功',

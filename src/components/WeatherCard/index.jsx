@@ -1,76 +1,79 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Search, LocationO, Replay } from '@react-vant/icons'
-import { getCurrentWeather } from '../../api/weather'
+import { useWeatherStore } from '../../store'
 import './index.css'
 
 const WeatherCard = ({ className = '' }) => {
-  const [weatherData, setWeatherData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [location, setLocation] = useState('北京')
+  // 使用weatherStore
+  const {
+    currentWeather,
+    currentLocation,
+    searchResults,
+    loading,
+    searchLoading,
+    error,
+    getCurrentWeather,
+    getWeatherByCity,
+    searchCities,
+    clearSearchResults
+  } = useWeatherStore()
+  
+  // 本地UI状态
   const [inputLocation, setInputLocation] = useState('')
   const [showInput, setShowInput] = useState(false)
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   // 获取天气数据
-  const fetchWeatherData = useCallback(async (city = location) => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      const data = await getCurrentWeather(city)
-      
-      // 格式化日期，只显示年月日
-      const now = new Date()
-      const formattedData = {
-        date: now.toLocaleDateString('zh-CN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        }),
-        city: data.city,
-        province: data.province,
-        weather: data.weather,
-        temperature: data.temperature,
-        minTemp: data.minTemp,
-        maxTemp: data.maxTemp,
-        wind: data.wind,
-        windPower: data.windPower,
-        updateTime: new Date(data.updateTime).toLocaleTimeString('zh-CN', {
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        isSimulated: data.isSimulated || false
-      }
-      
-      setWeatherData(formattedData)
-      setLocation(city)
-      
-      // 如果是模拟数据，显示提示
-      if (data.isSimulated) {
-        console.warn('使用模拟天气数据，可能是API调用失败或网络问题')
-      }
-      
-    } catch (err) {
-      setError(err.message || '获取天气信息失败')
-      console.error('Weather fetch error:', err)
-    } finally {
-      setLoading(false)
+  const fetchWeatherData = useCallback(async (city) => {
+    if (city) {
+      await getWeatherByCity(city)
+    } else {
+      await getCurrentWeather()
     }
-  }, [location])
+  }, [getCurrentWeather, getWeatherByCity])
   
-  // 处理位置搜索
-  const handleLocationSearch = () => {
+  // 处理城市搜索
+  const handleCitySearch = useCallback(async (keyword) => {
+    if (keyword.trim()) {
+      await searchCities(keyword.trim())
+      setShowSearchResults(true)
+    } else {
+      clearSearchResults()
+      setShowSearchResults(false)
+    }
+  }, [searchCities, clearSearchResults])
+  
+  // 处理输入变化
+  const handleInputChange = (e) => {
+    const value = e.target.value
+    setInputLocation(value)
+    handleCitySearch(value)
+  }
+  
+  // 选择搜索结果
+  const handleSelectCity = (city) => {
+    fetchWeatherData(city.name)
+    setShowInput(false)
+    setShowSearchResults(false)
+    setInputLocation('')
+    clearSearchResults()
+  }
+  
+  // 直接搜索当前输入
+  const handleDirectSearch = () => {
     if (inputLocation.trim()) {
       fetchWeatherData(inputLocation.trim())
       setShowInput(false)
+      setShowSearchResults(false)
       setInputLocation('')
+      clearSearchResults()
     }
   }
   
   // 处理回车键搜索
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleLocationSearch()
+      handleDirectSearch()
     }
   }
   
@@ -79,6 +82,8 @@ const WeatherCard = ({ className = '' }) => {
     setShowInput(!showInput)
     if (showInput) {
       setInputLocation('')
+      setShowSearchResults(false)
+      clearSearchResults()
     }
   }
 
@@ -89,6 +94,35 @@ const WeatherCard = ({ className = '' }) => {
   const handleRefresh = () => {
     fetchWeatherData()
   }
+
+  // 格式化天气数据用于显示
+  const formatWeatherData = (weather) => {
+    if (!weather) return null
+    
+    const now = new Date()
+    return {
+      date: now.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }),
+      city: weather.city,
+      province: weather.province,
+      weather: weather.weather,
+      temperature: weather.temperature,
+      minTemp: weather.minTemp,
+      maxTemp: weather.maxTemp,
+      wind: weather.wind,
+      windPower: weather.windPower,
+      updateTime: weather.updateTime ? new Date(weather.updateTime).toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      }) : '未知',
+      isSimulated: weather.isSimulated || false
+    }
+  }
+  
+  const weatherData = formatWeatherData(currentWeather)
 
   if (loading) {
     return (
@@ -101,7 +135,7 @@ const WeatherCard = ({ className = '' }) => {
     )
   }
 
-  if (error) {
+  if (error && !weatherData) {
     return (
       <div className={`weather-card error ${className}`} onClick={handleRefresh}>
         <div className="error-content">
@@ -118,7 +152,7 @@ const WeatherCard = ({ className = '' }) => {
       {/* 头部区域 */}
       <div className="weather-header">
         <div className="date-section">
-          <span className="date">{weatherData.date}</span>
+          <span className="date">{weatherData?.date || '--'}</span>
         </div>
         <div className="actions">
           <button className="action-btn" onClick={toggleInput} title="搜索城市">
@@ -136,14 +170,39 @@ const WeatherCard = ({ className = '' }) => {
           <input
             type="text"
             value={inputLocation}
-            onChange={(e) => setInputLocation(e.target.value)}
+            onChange={handleInputChange}
             onKeyPress={handleKeyPress}
             placeholder="输入城市名称，如：北京、上海"
             className="search-input"
             autoFocus
           />
+          
+          {/* 搜索结果列表 */}
+          {showSearchResults && searchResults.length > 0 && (
+            <div className="search-results">
+              {searchResults.map((city) => (
+                <div
+                  key={city.code}
+                  className="search-result-item"
+                  onClick={() => handleSelectCity(city)}
+                >
+                  <span className="city-name">{city.name}</span>
+                  <span className="province-name">{city.province}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* 搜索加载状态 */}
+          {searchLoading && (
+            <div className="search-loading">
+              <div className="loading-spinner small"></div>
+              <span>搜索中...</span>
+            </div>
+          )}
+          
           <div className="search-buttons">
-            <button className="search-btn" onClick={handleLocationSearch}>
+            <button className="search-btn" onClick={handleDirectSearch}>
               搜索
             </button>
             <button className="cancel-btn" onClick={toggleInput}>
@@ -157,24 +216,27 @@ const WeatherCard = ({ className = '' }) => {
       <div className="location-section">
         <LocationO />
         <span className="location-text">
-          {weatherData.province && weatherData.province !== weatherData.city 
+          {weatherData?.province && weatherData?.province !== weatherData?.city 
             ? `${weatherData.province} ${weatherData.city}` 
-            : weatherData.city}
+            : weatherData?.city || currentLocation || '未知位置'}
         </span>
-        {weatherData.isSimulated && (
+        {weatherData?.isSimulated && (
           <span className="simulated-badge">模拟数据</span>
+        )}
+        {error && (
+          <span className="error-badge">数据异常</span>
         )}
       </div>
 
       {/* 主要天气信息 */}
       <div className="weather-main">
         <div className="temperature-section">
-          <span className="temperature">{weatherData.temperature}°</span>
-          <span className="weather-desc">{weatherData.weather}</span>
+          <span className="temperature">{weatherData?.temperature ?? '--'}°</span>
+          <span className="weather-desc">{weatherData?.weather ?? '未知'}</span>
         </div>
         <div className="temp-range">
           <span className="temp-range-text">
-            {weatherData.minTemp}° / {weatherData.maxTemp}°
+            {weatherData?.minTemp ?? '--'}° / {weatherData?.maxTemp ?? '--'}°
           </span>
         </div>
       </div>
@@ -183,17 +245,17 @@ const WeatherCard = ({ className = '' }) => {
       <div className="weather-details">
         <div className="detail-item">
           <span className="detail-label">风向</span>
-          <span className="detail-value">{weatherData.wind}</span>
+          <span className="detail-value">{weatherData?.wind ?? '未知'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">风力</span>
-          <span className="detail-value">{weatherData.windPower}级</span>
+          <span className="detail-value">{weatherData?.windPower ?? '--'}级</span>
         </div>
       </div>
 
       {/* 底部更新时间 */}
       <div className="weather-footer">
-        <span className="update-time">更新于 {weatherData.updateTime}</span>
+        <span className="update-time">更新于 {weatherData?.updateTime ?? '未知'}</span>
       </div>
     </div>
   )

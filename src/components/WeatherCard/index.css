@@ -77,6 +77,61 @@
   border-color: #3b82f6;
 }
 
+.search-results {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  margin-bottom: 12px;
+}
+
+.search-result-item {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: #f9fafb;
+}
+
+.city-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.province-name {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.search-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.loading-spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
 .search-buttons {
   display: flex;
   gap: 8px;
@@ -126,6 +181,26 @@
   font-size: 14px;
   font-weight: 500;
   color: #374151;
+}
+
+.simulated-badge {
+  font-size: 10px;
+  background: #fbbf24;
+  color: #92400e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.error-badge {
+  font-size: 10px;
+  background: #fca5a5;
+  color: #dc2626;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 8px;
 }
 
 /* 主要天气信息 */

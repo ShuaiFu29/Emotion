@@ -33,6 +33,74 @@ const safeFetch = async (url, options = {}) => {
 }
 
 /**
+ * 搜索城市列表
+ * @param {string} keyword 搜索关键词
+ * @returns {Promise<Array>} 城市列表
+ */
+export const searchCities = async (keyword) => {
+  try {
+    if (!AMAP_KEY) {
+      throw new Error('未配置高德地图API密钥')
+    }
+
+    if (!keyword || keyword.trim() === '') {
+      return []
+    }
+
+    const url = `${BASE_URL}/config/district?keywords=${encodeURIComponent(keyword)}&subdistrict=1&key=${AMAP_KEY}&output=json`
+    const data = await safeFetch(url)
+    
+    if (data.status === '1' && data.districts && data.districts.length > 0) {
+      const results = []
+      
+      data.districts.forEach(district => {
+        // 添加省级区域
+        if (district.level === 'province') {
+          results.push({
+            name: district.name,
+            code: district.adcode,
+            province: district.name,
+            level: 'province'
+          })
+        }
+        
+        // 添加市级区域
+        if (district.districts && district.districts.length > 0) {
+          district.districts.forEach(city => {
+            if (city.level === 'city') {
+              results.push({
+                name: city.name,
+                code: city.adcode,
+                province: district.name,
+                level: 'city'
+              })
+            }
+          })
+        }
+      })
+      
+      return results.slice(0, 10) // 限制返回10个结果
+    } else {
+      return []
+    }
+  } catch (error) {
+    console.error('搜索城市失败:', error)
+    // 返回一些常用城市作为降级方案
+    const fallbackCities = [
+      { name: '北京', code: '110000', province: '北京市', level: 'province' },
+      { name: '上海', code: '310000', province: '上海市', level: 'province' },
+      { name: '广州', code: '440100', province: '广东省', level: 'city' },
+      { name: '深圳', code: '440300', province: '广东省', level: 'city' },
+      { name: '杭州', code: '330100', province: '浙江省', level: 'city' }
+    ]
+    
+    return fallbackCities.filter(city => 
+      city.name.includes(keyword) || city.province.includes(keyword)
+    )
+  }
+}
+
+/**
  * 获取城市编码
  * @param {string} city 城市名称
  * @returns {Promise<string>} 城市编码
@@ -190,5 +258,6 @@ export const getCurrentWeather = async (city = '北京') => {
 export default {
   getWeatherInfo,
   getCurrentWeather,
-  getCityCode
+  getCityCode,
+  searchCities
 }
