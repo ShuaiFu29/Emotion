@@ -31,7 +31,7 @@ function App() {
   }, [initAuth])
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading fullScreen={true} />}>
       <Routes>
         {/* 公开路由 - 不需要导航栏 */}
         <Route path="/login" element={<Login />} />
