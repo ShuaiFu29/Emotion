@@ -22,7 +22,7 @@ const Waterfall = ({ data = [], loading = false, hasMore = true, onLoadMore }) =
     updateColumns()
     window.addEventListener('resize', updateColumns)
     return () => window.removeEventListener('resize', updateColumns)
-  }, [])
+  }, [data])
 
   // 瀑布流数据分配算法
   const redistributeData = (items, cols) => {
@@ -100,7 +100,7 @@ const Waterfall = ({ data = [], loading = false, hasMore = true, onLoadMore }) =
             {item.tags && item.tags.length > 0 && (
               <div className="card-tags">
                 {item.tags.slice(0, 3).map((tag, tagIndex) => (
-                  <span key={tagIndex} className="tag">
+                  <span key={`${item.id}-tag-${tagIndex}`} className="tag">
                     #{tag}
                   </span>
                 ))}

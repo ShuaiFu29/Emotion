@@ -128,7 +128,7 @@ const Home = () => {
   // 初始化数据
   useEffect(() => {
     loadInitialData()
-  }, [])
+  }, [loadInitialData])
 
   if (initialLoading) {
     return <Loading fullScreen={true} text="加载首页内容..." />

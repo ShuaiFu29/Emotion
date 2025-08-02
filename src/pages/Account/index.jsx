@@ -20,7 +20,6 @@ import './index.less'
 const Account = () => {
   const navigate = useNavigate()
   const {
-    logout,
     forceLogout
   } = useAuthStore()
   const [

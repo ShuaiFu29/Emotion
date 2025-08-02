@@ -52,8 +52,13 @@ const Loading = ({
     return () => {
       if (fullScreen) {
         const style = document.getElementById('loading-global-reset')
-        if (style) {
-          style.remove()
+        // 安全地移除style元素
+        if (style && style.parentNode) {
+          try {
+            style.parentNode.removeChild(style)
+          } catch (error) {
+            console.warn('Failed to remove loading style:', error)
+          }
         }
         // 恢复body样式
         if (typeof document !== 'undefined') {
@@ -158,26 +163,47 @@ const LoadingSpinner = ({ size, color, type }) => {
     }
   }
 
-  // 添加CSS动画到head
-  if (typeof document !== 'undefined' && !document.getElementById('loading-animations')) {
-    const style = document.createElement('style')
-    style.id = 'loading-animations'
-    style.textContent = `
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+  // 使用useEffect管理动画样式的生命周期
+  useEffect(() => {
+    // 安全地添加CSS动画到head
+    if (typeof document !== 'undefined' && !document.getElementById('loading-animations')) {
+      try {
+        const style = document.createElement('style')
+        style.id = 'loading-animations'
+        style.textContent = `
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+          }
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+          }
+        `
+        if (document.head) {
+          document.head.appendChild(style)
+        }
+      } catch (error) {
+        console.warn('Failed to add loading animations:', error)
       }
-      @keyframes bounce {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1); }
+    }
+
+    // 清理函数
+    return () => {
+      const style = document.getElementById('loading-animations')
+      if (style && style.parentNode) {
+        try {
+          style.parentNode.removeChild(style)
+        } catch (error) {
+          console.warn('Failed to remove loading animations:', error)
+        }
       }
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.1); opacity: 0.7; }
-      }
-    `
-    document.head.appendChild(style)
-  }
+    }
+  }, [])
 
   if (type === 'dots') {
     return (
@@ -218,18 +244,39 @@ export const Skeleton = ({
     animation: animated ? 'skeleton-loading 1.5s ease-in-out infinite' : 'none'
   }
 
-  // 添加骨架屏动画
-  if (typeof document !== 'undefined' && !document.getElementById('skeleton-animations')) {
-    const style = document.createElement('style')
-    style.id = 'skeleton-animations'
-    style.textContent = `
-      @keyframes skeleton-loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
+  // 使用useEffect管理骨架屏动画样式的生命周期
+  useEffect(() => {
+    // 安全地添加骨架屏动画
+    if (typeof document !== 'undefined' && !document.getElementById('skeleton-animations')) {
+      try {
+        const style = document.createElement('style')
+        style.id = 'skeleton-animations'
+        style.textContent = `
+          @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+        `
+        if (document.head) {
+          document.head.appendChild(style)
+        }
+      } catch (error) {
+        console.warn('Failed to add skeleton animations:', error)
       }
-    `
-    document.head.appendChild(style)
-  }
+    }
+
+    // 清理函数
+    return () => {
+      const style = document.getElementById('skeleton-animations')
+      if (style && style.parentNode) {
+        try {
+          style.parentNode.removeChild(style)
+        } catch (error) {
+          console.warn('Failed to remove skeleton animations:', error)
+        }
+      }
+    }
+  }, [])
 
   return (
     <div
