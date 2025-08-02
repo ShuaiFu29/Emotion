@@ -1,23 +1,56 @@
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  padding: 20px;
-  padding-bottom: 80px;
+  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
+  padding-bottom: 80px; // 为底部导航栏留出空间
+}
 
-  .home-content {
-    text-align: center;
-    padding: 40px 20px;
+.weather-section {
+  padding: 16px;
+  padding-top: 20px;
+}
 
-    h1 {
-      font-size: 24px;
-      color: #166534;
-      margin-bottom: 16px;
+.content-section {
+  padding: 0 16px;
+}
+
+.section-header {
+  margin-bottom: 20px;
+  text-align: center;
+  
+  .section-title {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .weather-section {
+    padding: 12px;
+    padding-top: 16px;
+  }
+  
+  .content-section {
+    padding: 0 12px;
+  }
+  
+  .section-header {
+    .section-title {
+      font-size: 20px;
     }
-
-    p {
-      font-size: 16px;
-      color: #16a34a;
-      opacity: 0.8;
+    
+    .section-subtitle {
+      font-size: 13px;
     }
   }
 }

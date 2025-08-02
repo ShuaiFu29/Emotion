@@ -1,0 +1,357 @@
+/* 强制缓存清除 - 版本 2024.1.15.2 */
+.waterfall-container {
+  padding: 12px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%) !important;
+  min-height: 100vh;
+  /* 强制重新渲染 */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+.waterfall-grid {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.waterfall-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .waterfall-container {
+    padding: 16px;
+  }
+  .waterfall-grid {
+    gap: 16px;
+  }
+  .waterfall-column {
+    gap: 16px;
+  }
+}
+
+.waterfall-item {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* 日记卡片样式 - 温暖橙色系瀑布流 */
+.diary-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #81d4fa;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+  opacity: 1;
+  transform: none;
+  cursor: pointer;
+  /* 随机高度变化，创造瀑布流效果 */
+  min-height: 200px;
+}
+
+.diary-card:nth-child(3n+1) {
+  min-height: 250px;
+}
+
+.diary-card:nth-child(3n+2) {
+  min-height: 180px;
+}
+
+.diary-card:nth-child(5n+1) {
+  min-height: 300px;
+}
+
+.diary-card:nth-child(7n+1) {
+  min-height: 220px;
+}
+
+.diary-card.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* 添加温暖的橙色装饰条 */
+.diary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2196f3 0%, #42a5f5 100%);
+}
+
+.diary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-color: #42a5f5;
+}
+
+/* 卡片图片 - 抖音风格稳定显示 */
+.card-image {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.card-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: none;
+  object-fit: cover;
+  transform: none;
+}
+
+.diary-card:hover .card-image img {
+  transform: none;
+}
+
+/* 卡片内容 - 抖音风格紧凑布局 */
+.card-content {
+  padding: 12px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-description {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 标签 - 温暖橙色系 */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+  color: #1976d2;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #42a5f5;
+  transition: all 0.2s ease;
+  transform: none;
+}
+
+.tag:hover {
+  background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* 卡片底部 - 抖音风格 */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.card-date {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.card-stats {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.card-stats span {
+  font-size: 10px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.likes, .views {
+  transition: none;
+}
+
+.diary-card:hover .likes {
+  color: #6b7280;
+}
+
+.diary-card:hover .views {
+  color: #6b7280;
+}
+
+/* 加载更多 */
+.load-more-trigger {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.loading-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2196f3;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 没有更多内容 */
+.no-more-content {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 14px;
+  border-top: 1px solid rgba(33, 150, 243, 0.1);
+  margin-top: 20px;
+}
+
+/* 空状态 */
+.waterfall-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px 20px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .waterfall-container {
+    padding: 0 12px;
+  }
+  
+  .waterfall-columns {
+    gap: 12px;
+  }
+  
+  .waterfall-column {
+    gap: 12px;
+  }
+  
+  .card-content {
+    padding: 12px;
+  }
+  
+  .card-title {
+    font-size: 15px;
+  }
+  
+  .card-description {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .waterfall-container {
+    padding: 0 8px;
+  }
+  
+  .waterfall-columns {
+    gap: 8px;
+  }
+  
+  .waterfall-column {
+    gap: 8px;
+  }
+  
+  .diary-card {
+    border-radius: 12px;
+  }
+  
+  .card-content {
+    padding: 10px;
+  }
+  
+  .card-title {
+    font-size: 14px;
+  }
+  
+  .card-description {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .card-stats {
+    align-self: flex-end;
+  }
+}
+
+/* 性能优化 - 减少重绘 */
+.waterfall-item {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.diary-card {
+  will-change: box-shadow, transform;
+  backface-visibility: hidden;
+}
+
+/* 滚动优化 */
+.waterfall-container {
+  scroll-behavior: smooth;
+}
+
+/* 创意动画效果 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
+  50% { transform: translateY(-2px) rotate(0.5deg); }
+}
+
+.waterfall-item:nth-child(3n+1) .diary-card {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.waterfall-item:nth-child(3n+2) .diary-card {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.waterfall-item:nth-child(3n+3) .diary-card {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+/* 暂停动画当悬停时 */
+.waterfall-item:hover .diary-card {
+  animation-play-state: paused;
+}

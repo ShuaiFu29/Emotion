@@ -1,99 +1,44 @@
 .home-page {
   min-height: 100vh;
-  background: var(--pixel-bg-primary);
-  padding: var(--pixel-space-4);
+  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
   padding-bottom: 80px;
-  font-family: var(--pixel-font-family);
 }
-.home-page .home-header {
-  text-align: center;
-  margin-bottom: var(--pixel-space-6);
-  background: var(--pixel-bg-secondary);
-  border: var(--pixel-border);
-  box-shadow: var(--pixel-shadow);
-  padding: var(--pixel-space-6);
+.weather-section {
+  padding: 16px;
+  padding-top: 20px;
 }
-.home-page .home-header .pixel-title {
-  font-size: var(--pixel-font-size-2xl);
-  color: var(--pixel-primary);
-  text-shadow: 3px 3px 0 var(--pixel-primary-dark);
-  margin: 0 0 var(--pixel-space-3) 0;
-  animation: pixelPulse 2s infinite;
+.content-section {
+  padding: 0 16px;
 }
-.home-page .home-header .pixel-subtitle {
-  font-size: var(--pixel-font-size-sm);
-  color: var(--pixel-text-secondary);
-  margin: 0;
-  letter-spacing: 2px;
-}
-.home-page .home-content {
+.section-header {
+  margin-bottom: 20px;
   text-align: center;
 }
-.home-page .home-content > .pixel-card {
-  margin-bottom: var(--pixel-space-6);
-  padding: var(--pixel-space-6);
-}
-.home-page .home-content > .pixel-card .pixel-icon {
-  font-size: 48px;
-  margin-bottom: var(--pixel-space-4);
-  display: block;
-  animation: pixelBounce 2s infinite;
-}
-.home-page .home-content > .pixel-card h2 {
-  font-size: var(--pixel-font-size-lg);
-  color: var(--pixel-text-primary);
-  margin: 0 0 var(--pixel-space-3) 0;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
-}
-.home-page .home-content > .pixel-card p {
-  font-size: var(--pixel-font-size-sm);
-  color: var(--pixel-text-secondary);
-  margin: 0;
-}
-.home-page .pixel-features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--pixel-space-4);
-  margin-top: var(--pixel-space-6);
-}
-.home-page .pixel-feature-item {
-  background: var(--pixel-secondary);
-  border: var(--pixel-border);
-  border-color: var(--pixel-secondary-dark);
-  box-shadow: 0 4px 0 var(--pixel-secondary-darker);
-  padding: var(--pixel-space-4);
-  text-align: center;
-  cursor: pointer;
-  transition: var(--pixel-transition);
+.section-header .section-title {
   color: white;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.home-page .pixel-feature-item .pixel-icon {
-  font-size: 32px;
-  margin-bottom: var(--pixel-space-2);
-  display: block;
+.section-header .section-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  margin: 0;
+  font-weight: 400;
 }
-.home-page .pixel-feature-item span {
-  font-size: var(--pixel-font-size-xs);
-  font-family: var(--pixel-font-family);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.home-page .pixel-feature-item:hover {
-  background: var(--pixel-secondary-dark);
-  transform: translateY(-2px);
-}
-.home-page .pixel-feature-item:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--pixel-secondary-darker);
-}
-/* 响应式调整 */
-@media (min-width: 768px) {
-  .home-page {
-    padding: var(--pixel-space-6);
+@media (max-width: 768px) {
+  .weather-section {
+    padding: 12px;
+    padding-top: 16px;
   }
-  .home-page .pixel-features {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 600px;
-    margin: var(--pixel-space-6) auto 0;
+  .content-section {
+    padding: 0 12px;
+  }
+  .section-header .section-title {
+    font-size: 20px;
+  }
+  .section-header .section-subtitle {
+    font-size: 13px;
   }
 }
