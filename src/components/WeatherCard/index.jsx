@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Search, LocationO, Replay } from '@react-vant/icons'
 import { useWeatherStore } from '../../store'
-import { debounce } from '../../utils/debounce'
 import './index.css'
 
 const WeatherCard = ({ className = '' }) => {
@@ -48,21 +47,24 @@ const WeatherCard = ({ className = '' }) => {
 
   // 处理城市搜索（防抖版本）
   const handleCitySearch = useCallback(
-    debounce(async (keyword) => {
-      if (!keyword || keyword.trim().length === 0) {
-        clearSearchResults()
-        setShowSearchResults(false)
-        return
-      }
+    (keyword) => {
+      const timeoutId = setTimeout(async () => {
+        if (!keyword || keyword.trim().length === 0) {
+          clearSearchResults()
+          setShowSearchResults(false)
+          return
+        }
 
-      if (keyword.trim().length >= 2) {
-        setShowSearchResults(true)
-        await searchCities(keyword.trim())
-      } else {
-        setShowSearchResults(false)
-      }
-    }, 300),
-    [searchCities, clearSearchResults]
+        if (keyword.trim().length >= 2) {
+          setShowSearchResults(true)
+          await searchCities(keyword.trim())
+        } else {
+          setShowSearchResults(false)
+        }
+      }, 300)
+      return () => clearTimeout(timeoutId)
+    },
+    [clearSearchResults, searchCities]
   )
 
   // 处理输入变化

@@ -6,24 +6,39 @@ const COZE_CONFIG = {
   baseUrl: import.meta.env.VITE_COZE_BASE_URL || 'https://api.coze.cn'
 };
 
+// 生成唯一用户ID
+const generateUserId = () => {
+  return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+};
+
 /**
  * 发送消息到Coze Agent
  * @param {string} message - 用户消息
  * @param {string} conversationId - 会话ID（可选）
+ * @param {Array} chatHistory - 聊天历史（可选）
  * @returns {Promise<Object>} API响应
  */
-export const sendMessageToCoze = async (message, conversationId = null) => {
+export const sendMessageToCoze = async (message, conversationId = null, chatHistory = []) => {
   try {
+    if (!message || !message.trim()) {
+      throw new Error('消息内容不能为空');
+    }
+
     const requestBody = {
       bot_id: COZE_CONFIG.botId,
-      user: 'user_' + Date.now(), // 生成唯一用户ID
-      query: message,
-      chat_history: [],
+      user: generateUserId(),
+      query: message.trim(),
       stream: false
     };
 
+    // 添加会话ID（如果存在）
     if (conversationId) {
       requestBody.conversation_id = conversationId;
+    }
+
+    // 添加聊天历史（如果存在）
+    if (chatHistory && chatHistory.length > 0) {
+      requestBody.chat_history = chatHistory;
     }
 
     const response = await fetch(`${COZE_CONFIG.baseUrl}/open_api/v2/chat`, {
@@ -31,14 +46,16 @@ export const sendMessageToCoze = async (message, conversationId = null) => {
       headers: {
         'Authorization': `Bearer ${COZE_CONFIG.apiToken}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': '*/*',
+        'Host': new URL(COZE_CONFIG.baseUrl).host,
+        'Connection': 'keep-alive'
       },
       body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`API请求失败: ${response.status} ${response.statusText}. ${errorData.msg || ''}`);
+      throw new Error(`API请求失败: ${response.status} ${response.statusText}. ${errorData.msg || errorData.message || ''}`);
     }
 
     const data = await response.json();
@@ -122,12 +139,17 @@ export const formatCozeResponse = (response) => {
     };
   }
 
-  // 获取最后一条助手消息
-  const assistantMessage = response.messages
-    .filter(msg => msg.role === 'assistant' && msg.type === 'answer')
-    .pop();
+  // 获取所有助手回答消息，过滤掉verbose和follow_up类型
+  const assistantMessages = response.messages
+    .filter(msg => 
+      msg.role === 'assistant' && 
+      msg.type === 'answer' && 
+      msg.content && 
+      msg.content.trim() &&
+      !msg.content.startsWith('{') // 过滤掉JSON格式的系统消息
+    );
 
-  if (!assistantMessage) {
+  if (assistantMessages.length === 0) {
     return {
       id: Date.now().toString(),
       content: '抱歉，我无法理解您的问题。',
@@ -136,11 +158,38 @@ export const formatCozeResponse = (response) => {
     };
   }
 
+  // 合并所有有效的助手消息内容
+  const combinedContent = assistantMessages
+    .map(msg => msg.content.trim())
+    .join('\n')
+    .trim();
+
   return {
-    id: assistantMessage.id || Date.now().toString(),
-    content: assistantMessage.content || '抱歉，响应内容为空。',
+    id: assistantMessages[0].id || Date.now().toString(),
+    content: combinedContent || '抱歉，响应内容为空。',
     type: 'assistant',
     timestamp: new Date().toISOString(),
     conversationId: response.conversation_id
   };
+};
+
+/**
+ * 将聊天消息转换为Coze API格式的聊天历史
+ * @param {Array} messages - 聊天消息数组
+ * @returns {Array} Coze API格式的聊天历史
+ */
+export const formatChatHistory = (messages) => {
+  if (!messages || messages.length === 0) {
+    return [];
+  }
+
+  return messages
+    .filter(msg => msg.type === 'user' || msg.type === 'assistant')
+    .slice(-10) // 只保留最近10条消息
+    .map(msg => ({
+      role: msg.type === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+      content_type: 'text',
+      ...(msg.type === 'assistant' && { type: 'answer' })
+    }));
 };
