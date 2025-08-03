@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Search, LocationO, Replay } from '@react-vant/icons'
 import { useWeatherStore } from '../../store'
+import { debounce } from '../../utils/debounce'
 import './index.css'
 
 const WeatherCard = ({ className = '' }) => {
+  // console.log('🌤️ WeatherCard组件已渲染');
   // 使用weatherStore
   const {
     currentWeather,
@@ -17,7 +19,11 @@ const WeatherCard = ({ className = '' }) => {
     searchCities,
     clearSearchResults
   } = useWeatherStore()
-  
+
+  // console.log('📊 WeatherCard状态:', { currentWeather, currentLocation, loading, error });
+
+
+
   // 本地UI状态
   const [inputLocation, setInputLocation] = useState('')
   const [showInput, setShowInput] = useState(false)
@@ -25,31 +31,47 @@ const WeatherCard = ({ className = '' }) => {
 
   // 获取天气数据
   const fetchWeatherData = useCallback(async (city) => {
-    if (city) {
-      await getWeatherByCity(city)
-    } else {
-      await getCurrentWeather()
+    // console.log('WeatherCard: 开始获取天气数据, city:', city);
+    try {
+      if (city) {
+        // console.log('WeatherCard: 根据城市获取天气:', city);
+        await getWeatherByCity(city)
+      } else {
+        // console.log('WeatherCard: 获取当前位置天气');
+        await getCurrentWeather()
+      }
+      // console.log('WeatherCard: 天气数据获取完成');
+    } catch (error) {
+      console.error('WeatherCard: 获取天气数据失败:', error);
     }
   }, [getCurrentWeather, getWeatherByCity])
-  
-  // 处理城市搜索
-  const handleCitySearch = useCallback(async (keyword) => {
-    if (keyword.trim()) {
-      await searchCities(keyword.trim())
-      setShowSearchResults(true)
-    } else {
-      clearSearchResults()
-      setShowSearchResults(false)
-    }
-  }, [searchCities, clearSearchResults])
-  
+
+  // 处理城市搜索（防抖版本）
+  const handleCitySearch = useCallback(
+    debounce(async (keyword) => {
+      if (!keyword || keyword.trim().length === 0) {
+        clearSearchResults()
+        setShowSearchResults(false)
+        return
+      }
+
+      if (keyword.trim().length >= 2) {
+        setShowSearchResults(true)
+        await searchCities(keyword.trim())
+      } else {
+        setShowSearchResults(false)
+      }
+    }, 300),
+    [searchCities, clearSearchResults]
+  )
+
   // 处理输入变化
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputLocation(value)
     handleCitySearch(value)
   }
-  
+
   // 选择搜索结果
   const handleSelectCity = (city) => {
     fetchWeatherData(city.name)
@@ -58,7 +80,7 @@ const WeatherCard = ({ className = '' }) => {
     setInputLocation('')
     clearSearchResults()
   }
-  
+
   // 直接搜索当前输入
   const handleDirectSearch = () => {
     if (inputLocation.trim()) {
@@ -69,14 +91,14 @@ const WeatherCard = ({ className = '' }) => {
       clearSearchResults()
     }
   }
-  
+
   // 处理回车键搜索
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleDirectSearch()
     }
   }
-  
+
   // 切换输入框显示
   const toggleInput = () => {
     setShowInput(!showInput)
@@ -89,7 +111,7 @@ const WeatherCard = ({ className = '' }) => {
 
   useEffect(() => {
     fetchWeatherData()
-  }, [])
+  }, [fetchWeatherData])
 
   const handleRefresh = () => {
     fetchWeatherData()
@@ -98,7 +120,7 @@ const WeatherCard = ({ className = '' }) => {
   // 格式化天气数据用于显示
   const formatWeatherData = (weather) => {
     if (!weather) return null
-    
+
     const now = new Date()
     return {
       date: now.toLocaleDateString('zh-CN', {
@@ -110,18 +132,18 @@ const WeatherCard = ({ className = '' }) => {
       province: weather.province,
       weather: weather.weather,
       temperature: weather.temperature,
-      minTemp: weather.minTemp,
-      maxTemp: weather.maxTemp,
+      minTemp: weather.minTemp || '--',
+      maxTemp: weather.maxTemp || '--',
       wind: weather.wind,
-      windPower: weather.windPower,
-      updateTime: weather.updateTime ? new Date(weather.updateTime).toLocaleTimeString('zh-CN', {
+      windPower: weather.windPower || '--',
+      updateTime: weather.reporttime ? new Date(weather.reporttime).toLocaleTimeString('zh-CN', {
         hour: '2-digit',
         minute: '2-digit'
       }) : '未知',
       isSimulated: weather.isSimulated || false
     }
   }
-  
+
   const weatherData = formatWeatherData(currentWeather)
 
   if (loading) {
@@ -176,7 +198,7 @@ const WeatherCard = ({ className = '' }) => {
             className="search-input"
             autoFocus
           />
-          
+
           {/* 搜索结果列表 */}
           {showSearchResults && searchResults.length > 0 && (
             <div className="search-results">
@@ -192,7 +214,7 @@ const WeatherCard = ({ className = '' }) => {
               ))}
             </div>
           )}
-          
+
           {/* 搜索加载状态 */}
           {searchLoading && (
             <div className="search-loading">
@@ -200,7 +222,7 @@ const WeatherCard = ({ className = '' }) => {
               <span>搜索中...</span>
             </div>
           )}
-          
+
           <div className="search-buttons">
             <button className="search-btn" onClick={handleDirectSearch}>
               搜索
@@ -216,15 +238,12 @@ const WeatherCard = ({ className = '' }) => {
       <div className="location-section">
         <LocationO />
         <span className="location-text">
-          {weatherData?.province && weatherData?.province !== weatherData?.city 
-            ? `${weatherData.province} ${weatherData.city}` 
+          {weatherData?.province && weatherData?.province !== weatherData?.city
+            ? `${weatherData.province} ${weatherData.city}`
             : weatherData?.city || currentLocation || '未知位置'}
         </span>
         {weatherData?.isSimulated && (
           <span className="simulated-badge">模拟数据</span>
-        )}
-        {error && (
-          <span className="error-badge">数据异常</span>
         )}
       </div>
 
