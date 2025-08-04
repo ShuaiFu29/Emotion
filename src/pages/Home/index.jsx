@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus } from '@react-vant/icons'
-import { useNavigate } from 'react-router-dom'
 import WeatherCard from '@/components/WeatherCard'
 import Waterfall from '@/components/Waterfall'
 import Loading from '@/components/Loading'
@@ -8,7 +7,6 @@ import { useDiaryStore } from '@/store/diaryStore'
 import './index.less'
 
 const Home = () => {
-  const navigate = useNavigate()
   const { diaries, loading, hasMore, fetchDiaries, refreshDiaries } = useDiaryStore()
   const [initialLoading, setInitialLoading] = useState(true)
 
@@ -38,10 +36,7 @@ const Home = () => {
     window.open('/publish', '_blank')
   }
 
-  // 下拉刷新
-  const onRefresh = useCallback(async () => {
-    await refreshDiaries();
-  }, [refreshDiaries]);
+  // 下拉刷新功能已移除，因为当前未在UI中使用
 
   // 初始化数据
   useEffect(() => {

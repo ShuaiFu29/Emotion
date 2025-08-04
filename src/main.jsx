@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import 'lib-flexible'  // 移动端适配
+import '@/components/CustomToast/index.less'  // Toast样式
 import App from '@/App'
 import {
   BrowserRouter as Router,

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { Button, Field, Toast, NavBar, Uploader, Tag, ActionSheet } from 'react-vant'
-
+import { Button, Field, NavBar, Uploader, Tag, ActionSheet } from 'react-vant'
 import { PhotoO, DeleteO, Add } from '@react-vant/icons'
+import { Toast } from '@/utils/toast'
 import useDiaryStore from '@/store/diaryStore'
 import './index.less'
 
@@ -109,23 +109,48 @@ const Publish = () => {
           weather
         }
 
+      console.log('开始发布日记:', diaryData)
       const result = await createDiary(diaryData)
+      console.log('发布结果:', result)
+      
       if (result.success) {
         Toast.success('发布成功！')
         
         // 跨标签通信：通知其他标签页更新数据
-        if (window.BroadcastChannel) {
-          const channel = new BroadcastChannel('diary_updates')
-          channel.postMessage({
-            type: 'NEW_DIARY',
-            data: result.data
-          })
-          channel.close()
+        try {
+          if (window.BroadcastChannel) {
+            const channel = new BroadcastChannel('diary-updates')
+            channel.postMessage({
+              type: 'NEW_DIARY_PUBLISHED',
+              data: result.data
+            })
+            channel.close()
+            console.log('跨标签页通信发送成功')
+          }
+        } catch (broadcastError) {
+          console.error('跨标签页通信失败:', broadcastError)
         }
         
-        // 延迟关闭当前标签页
+        // 尝试关闭标签页，如果失败则提供替代方案
         setTimeout(() => {
-          window.close()
+          try {
+            // 检查是否可以关闭窗口
+            if (window.opener || window.history.length === 1) {
+              window.close()
+            } else {
+              // 如果无法关闭，显示提示并跳转到主页
+              Toast.success('正在返回主页...', 2000)
+              setTimeout(() => {
+                window.location.href = '/'
+              }, 2000)
+            }
+          } catch {
+            console.log('无法自动关闭标签页，跳转到主页')
+            Toast.success('正在返回主页...', 2000)
+            setTimeout(() => {
+              window.location.href = '/'
+            }, 2000)
+          }
         }, 1500)
       } else {
         Toast.fail(result.error || '发布失败，请重试')
@@ -144,7 +169,13 @@ const Publish = () => {
         title="发布日记"
         leftText="取消"
         rightText={publishing ? "发布中..." : "发布"}
-        onClickLeft={() => window.close()}
+        onClickLeft={() => {
+          try {
+            window.close()
+          } catch {
+            window.location.href = '/'
+          }
+        }}
         onClickRight={handlePublish}
       />
 

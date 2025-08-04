@@ -26,7 +26,7 @@ const useDiaryStore = create((set, get) => ({
     const { page = 1, pageSize = 10, refresh = false } = options
     
     if (refresh) {
-      set({ diaries: [], pagination: { ...get().pagination, page: 1, hasMore: true } })
+      set({ pagination: { ...get().pagination, page: 1, hasMore: true } })
     }
     
     set({ loading: true, error: null })
@@ -35,49 +35,12 @@ const useDiaryStore = create((set, get) => ({
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 800))
       
-      // 模拟日记数据
-      const mockDiaries = [
-        {
-          id: '1',
-          title: '美好的一天',
-          content: '今天天气很好，心情也很棒。去公园散步，看到了很多美丽的花朵。',
-          mood: 'happy',
-          weather: '晴',
-          location: '北京',
-          images: [],
-          tags: ['散步', '公园'],
-          createdAt: '2024-01-15T10:30:00Z',
-          updatedAt: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: '2',
-          title: '工作日常',
-          content: '今天完成了一个重要的项目，虽然有些累，但是很有成就感。',
-          mood: 'satisfied',
-          weather: '多云',
-          location: '上海',
-          images: [],
-          tags: ['工作', '项目'],
-          createdAt: '2024-01-14T16:45:00Z',
-          updatedAt: '2024-01-14T16:45:00Z'
-        },
-        {
-          id: '3',
-          title: '雨天思考',
-          content: '下雨的日子总是让人想起很多往事，有些感伤，但也有温暖的回忆。',
-          mood: 'thoughtful',
-          weather: '雨',
-          location: '广州',
-          images: [],
-          tags: ['思考', '回忆'],
-          createdAt: '2024-01-13T14:20:00Z',
-          updatedAt: '2024-01-13T14:20:00Z'
-        }
-      ]
+      // 获取当前store中的所有日记数据
+      const allDiaries = get().diaries
       
       // 应用过滤器
       const { filters } = get()
-      let filteredDiaries = mockDiaries
+      let filteredDiaries = allDiaries
       
       if (filters.keyword) {
         filteredDiaries = filteredDiaries.filter(diary => 
@@ -100,10 +63,8 @@ const useDiaryStore = create((set, get) => ({
       const endIndex = startIndex + pageSize
       const paginatedDiaries = filteredDiaries.slice(startIndex, endIndex)
       
-      const currentDiaries = refresh ? paginatedDiaries : [...get().diaries, ...paginatedDiaries]
-      
       set({
-        diaries: currentDiaries,
+        diaries: refresh ? filteredDiaries : [...get().diaries, ...paginatedDiaries],
         loading: false,
         pagination: {
           page,
