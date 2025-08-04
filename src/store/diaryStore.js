@@ -316,6 +316,25 @@ const useDiaryStore = create((set, get) => ({
     set({ error: null })
   },
 
+  // 获取日记数据（兼容首页使用）
+  fetchDiaries: async (reset = false) => {
+    const { pagination } = get()
+    const page = reset ? 1 : pagination.page + 1
+    
+    const result = await get().getDiaries({
+      page,
+      pageSize: pagination.pageSize,
+      refresh: reset
+    })
+    
+    return result
+  },
+
+  // 刷新日记数据
+  refreshDiaries: async () => {
+    return await get().fetchDiaries(true)
+  },
+
   // 重置状态
   reset: () => {
     set({
@@ -341,4 +360,5 @@ const useDiaryStore = create((set, get) => ({
   }
 }))
 
+export { useDiaryStore }
 export default useDiaryStore

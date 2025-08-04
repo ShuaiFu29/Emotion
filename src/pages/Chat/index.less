@@ -123,7 +123,7 @@
   top: 60px;
   left: 0;
   right: 0;
-  bottom: 200px !important; /* 输入框高度80px + 新的底部间距120px */
+  bottom: 130px !important; /* 输入框高度80px + tabbar高度50px */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 16px;
@@ -134,7 +134,7 @@
   
   /* 移动端适配 */
   @media (max-width: 768px) {
-    bottom: 190px !important; /* 移动端输入框70px + 新的底部间距120px */
+    bottom: 120px !important; /* 移动端输入框70px + tabbar高度50px */
     padding: 12px;
   }
 }
@@ -407,7 +407,7 @@
 /* 固定输入框 - 彻底修复溢出问题 */
 .chat-input {
   position: fixed !important;
-  bottom: 120px !important; /* 确保与底栏完全分离 */
+  bottom: 50px !important; /* 紧贴在tabbar上方 */
   left: 0 !important; /* 完全贴边，避免任何溢出 */
   right: 0 !important;
   width: 100% !important; /* 使用100%宽度 */
@@ -426,7 +426,7 @@
   
   /* 移动端适配 - 彻底防止溢出 */
   @media (max-width: 768px) {
-    bottom: 120px !important;
+    bottom: 50px !important;
     left: 0 !important; /* 移动端完全贴边 */
     right: 0 !important;
     width: 100% !important; /* 移动端使用100%宽度 */

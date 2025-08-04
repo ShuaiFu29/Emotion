@@ -77,7 +77,8 @@ const Account = () => {
         setShowUserInfoDialog(true)
         break
       case '添加':
-        navigate('/publish')
+        // 在新标签页打开publish页面
+        window.open('/publish', '_blank')
         break
       case '聊天':
         navigate('/chat')

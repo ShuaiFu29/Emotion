@@ -1,32 +1,222 @@
 .publish-page {
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
 }
-.publish-page .publish-content {
-  padding: 20px;
+.publish-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
 }
-.publish-page .publish-content .title-field {
+.publish-content .title-field,
+.publish-content .content-field {
+  margin-bottom: 16px;
+}
+.publish-content .title-field .rv-field__control,
+.publish-content .content-field .rv-field__control {
+  border-radius: 12px;
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+.publish-content .title-field .rv-field__control:focus,
+.publish-content .content-field .rv-field__control:focus {
+  border-color: #87CEEB;
+  box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
+}
+.image-upload-section {
   margin-bottom: 20px;
-  background-color: white;
-  border-radius: 8px;
-  padding: 10px;
 }
-.publish-page .publish-content .content-field {
-  margin-bottom: 30px;
-  background-color: white;
-  border-radius: 8px;
-  padding: 10px;
+.image-upload-section .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
 }
-.publish-page .publish-content .content-field .van-field__control {
-  min-height: 200px;
+.image-upload-section .image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
-.publish-page .publish-content .publish-actions {
+.image-upload-section .image-grid .image-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+.image-upload-section .image-grid .image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.image-upload-section .image-grid .image-item .delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.image-upload-section .image-grid .image-item .delete-btn:hover {
+  background: #ff4444;
+  color: white;
+}
+.image-upload-section .image-grid .upload-btn {
+  aspect-ratio: 1;
+  border: 2px dashed #87CEEB;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.5);
+}
+.image-upload-section .image-grid .upload-btn span {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #666;
+}
+.image-upload-section .image-grid .upload-btn:hover {
+  border-color: #5DADE2;
+  background: rgba(135, 206, 235, 0.1);
+}
+.tags-section {
+  margin-bottom: 20px;
+}
+.tags-section .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+.tags-section .tags-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: stretch;
+}
+.tags-section .tags-input .rv-field {
+  flex: 1;
+}
+.tags-section .tags-input .rv-field .rv-field__control {
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+.tags-section .tags-input .rv-field .rv-field__control:focus {
+  border-color: #87CEEB;
+  box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
+}
+.tags-section .tags-input .rv-button {
+  height: 44px;
+  border-radius: 12px;
+  padding: 0 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #87CEEB 0%, #5DADE2 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+.tags-section .tags-input .rv-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(135, 206, 235, 0.3);
+  background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+}
+.tags-section .tags-input .rv-button:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+.tags-section .tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags-section .tags-list .tag-item {
+  background: linear-gradient(135deg, #87CEEB 0%, #5DADE2 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.tags-section .tag-limit-tip {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+}
+.mood-weather-section {
+  margin-bottom: 20px;
+}
+.mood-weather-section .mood-weather-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.mood-weather-section .mood-weather-row .mood-selector,
+.mood-weather-section .mood-weather-row .weather-selector {
+  padding: 20px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+.mood-weather-section .mood-weather-row .mood-selector .label,
+.mood-weather-section .mood-weather-row .weather-selector .label {
+  font-size: 16px;
+  color: #666;
+  font-weight: 600;
+}
+.mood-weather-section .mood-weather-row .mood-selector .value,
+.mood-weather-section .mood-weather-row .weather-selector .value {
+  font-size: 16px;
+  color: #333;
+  margin-left: 6px;
+  font-weight: 500;
+}
+.mood-weather-section .mood-weather-row .mood-selector:hover,
+.mood-weather-section .mood-weather-row .weather-selector:hover {
+  border-color: #87CEEB;
+  background: rgba(135, 206, 235, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(135, 206, 235, 0.2);
+}
+.publish-actions {
+  margin-top: 30px;
   padding: 20px 0;
 }
-.publish-page .publish-content .publish-actions .publish-btn {
+.publish-btn {
   width: 100%;
   height: 50px;
   border-radius: 25px;
-  font-size: 18px;
-  font-weight: 500;
+  background: linear-gradient(135deg, #87CEEB 0%, #5DADE2 100%);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3);
+  transition: all 0.3s ease;
+}
+.publish-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(135, 206, 235, 0.4);
+  background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+}
+.publish-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
