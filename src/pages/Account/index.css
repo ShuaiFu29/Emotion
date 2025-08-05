@@ -38,6 +38,22 @@
   height: 100%;
   object-fit: cover;
 }
+.container .user .user-avatar .avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  color: #999;
+  font-size: 20px;
+  text-align: center;
+}
+.container .user .user-avatar .avatar-placeholder span {
+  margin-top: 4px;
+  font-size: 18px;
+}
 .container .user .user-info {
   flex: 1;
 }
@@ -53,7 +69,7 @@
 }
 .container .user .slogan {
   font-size: 24px;
-  color: #ccc;
+  color: #333;
 }
 .container .mt3 .van-cell-group--inset {
   margin-top: 16px;

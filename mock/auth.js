@@ -3,8 +3,11 @@ const users = [
   {
     id: 1,
     username: 'admin',
+    nickname: 'admin', // 昵称，默认为用户名
     email: 'admin@example.com',
-    password: '123456' // 实际项目中应该加密存储
+    password: '123456', // 实际项目中应该加密存储
+    avatar: null,
+    signature: null
   }
 ]
 
@@ -16,13 +19,13 @@ const generateToken = (user) => {
     email: user.email,
     exp: Date.now() + 24 * 60 * 60 * 1000 // 24小时过期
   }
-  return btoa(JSON.stringify(payload))
+  return Buffer.from(JSON.stringify(payload)).toString('base64')
 }
 
 // 验证token
 const verifyToken = (token) => {
   try {
-    const payload = JSON.parse(atob(token))
+    const payload = JSON.parse(Buffer.from(token, 'base64').toString('utf8'))
     if (payload.exp < Date.now()) {
       return null // token过期
     }
@@ -62,7 +65,10 @@ export default [
           user: {
             id: user.id,
             username: user.username,
-            email: user.email
+            nickname: user.nickname,
+            email: user.email,
+            avatar: user.avatar,
+            signature: user.signature
           }
         }
       }
@@ -90,8 +96,11 @@ export default [
       const newUser = {
         id: users.length + 1,
         username,
+        nickname: username, // 默认昵称为用户名
         email,
-        password // 实际项目中应该加密
+        password, // 实际项目中应该加密
+        avatar: null,
+        signature: null
       }
 
       users.push(newUser)
@@ -107,7 +116,10 @@ export default [
           user: {
             id: newUser.id,
             username: newUser.username,
-            email: newUser.email
+            nickname: newUser.nickname,
+            email: newUser.email,
+            avatar: newUser.avatar,
+            signature: newUser.signature
           }
         }
       }
@@ -156,7 +168,75 @@ export default [
           user: {
             id: user.id,
             username: user.username,
-            email: user.email
+            nickname: user.nickname,
+            email: user.email,
+            avatar: user.avatar,
+            signature: user.signature
+          }
+        }
+      }
+    }
+  },
+
+  // 更新用户信息接口
+  {
+    url: '/api/auth/update-profile',
+    method: 'put',
+    response: ({ headers, body }) => {
+      const authorization = headers.authorization
+      if (!authorization || !authorization.startsWith('Bearer ')) {
+        return {
+          code: 401,
+          message: '未提供有效的认证信息',
+          data: null
+        }
+      }
+
+      const token = authorization.substring(7)
+      const payload = verifyToken(token)
+
+      if (!payload) {
+        return {
+          code: 401,
+          message: 'Token无效或已过期',
+          data: null
+        }
+      }
+
+      // 查找用户
+      const userIndex = users.findIndex(u => u.id === payload.id)
+      if (userIndex === -1) {
+        return {
+          code: 401,
+          message: '用户不存在',
+          data: null
+        }
+      }
+
+      // 更新用户信息
+       const { avatar, signature, nickname } = body
+       if (avatar !== undefined) {
+         users[userIndex].avatar = avatar
+       }
+       if (signature !== undefined) {
+         users[userIndex].signature = signature
+       }
+       if (nickname !== undefined) {
+         users[userIndex].nickname = nickname
+       }
+       // 注意：不允许修改username
+
+      return {
+        code: 200,
+        message: '用户信息更新成功',
+        data: {
+          user: {
+            id: users[userIndex].id,
+            username: users[userIndex].username,
+            nickname: users[userIndex].nickname,
+            email: users[userIndex].email,
+            avatar: users[userIndex].avatar,
+            signature: users[userIndex].signature
           }
         }
       }

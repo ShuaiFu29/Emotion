@@ -198,6 +198,54 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
+  // 更新用户信息
+  updateUserInfo: async (userInfo) => {
+    set({ loading: true, error: null })
+    try {
+      const { token } = get()
+      if (!token) {
+        throw new Error('未登录，无法更新用户信息')
+      }
+      
+      const response = await fetch('/api/auth/update-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(userInfo),
+      })
+      
+      // 检查网络错误
+      if (!response.ok) {
+        throw new Error(`网络错误: ${response.status} ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      
+      // 检查业务错误
+      if (data.code !== 200) {
+        throw new Error(data.message || '更新用户信息失败')
+      }
+      
+      // 更新本地用户信息 - 使用后端返回的最新数据
+      set(state => ({
+        user: data.data.user, // 使用后端返回的完整用户数据
+        loading: false,
+        error: null
+      }))
+      
+      return { success: true }
+    } catch (networkError) {
+      const errorMessage = networkError.message || '更新用户信息失败，请检查网络连接'
+      set({
+        loading: false,
+        error: errorMessage
+      })
+      return { success: false, error: errorMessage }
+    }
+  },
+
   // 清除错误
   clearError: () => set({ error: null })
 }))

@@ -19,6 +19,7 @@ const Chat = lazy(() => import('@/pages/Chat'))
 const Account = lazy(() => import('@/pages/Account'))
 const Publish = lazy(() => import('@/pages/Publish'))
 const Detail = lazy(() => import('@/pages/Detail'))
+
 const NotFound = lazy(() => import('@/pages/NotFound'))
 import Loading from '@/components/Loading'
 import './App.css'
