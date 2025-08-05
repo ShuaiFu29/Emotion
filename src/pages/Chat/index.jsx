@@ -63,7 +63,6 @@ const Chat = () => {
     clearMessages,
     clearError,
     initialize,
-    resendMessage,
     streamingMessageId,
     connectionStatus,
     setupNetworkMonitoring,

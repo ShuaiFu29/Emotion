@@ -35,12 +35,29 @@ const useDiaryStore = create((set, get) => ({
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 800))
       
-      // 获取当前store中的所有日记数据
-      const allDiaries = get().diaries
+      // 模拟从服务器获取所有日记数据（包括其他标签页创建的）
+      // 这里我们从localStorage获取全局日记数据，模拟服务器数据
+      let serverDiaries = []
+      try {
+        const storedDiaries = localStorage.getItem('global_diaries')
+        if (storedDiaries) {
+          serverDiaries = JSON.parse(storedDiaries)
+        }
+      } catch (e) {
+        console.warn('读取全局日记数据失败:', e)
+      }
+      
+      // 如果没有全局数据，使用当前store中的数据作为初始数据
+      if (serverDiaries.length === 0) {
+        serverDiaries = get().diaries
+      }
+      
+      // 按创建时间倒序排列
+      serverDiaries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       
       // 应用过滤器
       const { filters } = get()
-      let filteredDiaries = allDiaries
+      let filteredDiaries = serverDiaries
       
       if (filters.keyword) {
         filteredDiaries = filteredDiaries.filter(diary => 
@@ -63,8 +80,9 @@ const useDiaryStore = create((set, get) => ({
       const endIndex = startIndex + pageSize
       const paginatedDiaries = filteredDiaries.slice(startIndex, endIndex)
       
+      // 更新store状态
       set({
-        diaries: refresh ? filteredDiaries : [...get().diaries, ...paginatedDiaries],
+        diaries: refresh ? paginatedDiaries : [...get().diaries, ...paginatedDiaries],
         loading: false,
         pagination: {
           page,
@@ -148,7 +166,23 @@ const useDiaryStore = create((set, get) => ({
         updatedAt: new Date().toISOString()
       }
       
-      // 添加到列表开头
+      // 保存到全局localStorage，模拟服务器数据更新
+      try {
+        let globalDiaries = []
+        const storedDiaries = localStorage.getItem('global_diaries')
+        if (storedDiaries) {
+          globalDiaries = JSON.parse(storedDiaries)
+        }
+        
+        // 添加新日记到全局数据
+        globalDiaries.unshift(newDiary)
+        localStorage.setItem('global_diaries', JSON.stringify(globalDiaries))
+        console.log('新日记已保存到全局数据:', newDiary)
+      } catch (e) {
+        console.warn('保存全局日记数据失败:', e)
+      }
+      
+      // 添加到当前store列表开头
       const currentDiaries = get().diaries
       set({
         diaries: [newDiary, ...currentDiaries],

@@ -7,7 +7,7 @@ import { useDiaryStore } from '@/store/diaryStore'
 import './index.less'
 
 const Home = () => {
-  const { diaries, loading, hasMore, fetchDiaries, refreshDiaries } = useDiaryStore()
+  const { diaries, loading, hasMore, fetchDiaries } = useDiaryStore()
   const [initialLoading, setInitialLoading] = useState(true)
 
 
@@ -48,8 +48,9 @@ const Home = () => {
     channel.onmessage = (event) => {
       if (event.data.type === 'NEW_DIARY_PUBLISHED') {
         // 当收到新日记发布通知时，重新加载数据
-        console.log('收到新日记发布通知，重新加载数据')
-        refreshDiaries()
+        console.log('收到新日记发布通知，重新加载数据', event.data)
+        // 使用loadInitialData来确保完全重新加载数据
+        loadInitialData()
       }
     }
     
@@ -57,7 +58,7 @@ const Home = () => {
     return () => {
       channel.close()
     }
-  }, [fetchDiaries, refreshDiaries])
+  }, [loadInitialData])
 
   if (initialLoading) {
     return <Loading fullScreen={true} text="加载首页内容..." />

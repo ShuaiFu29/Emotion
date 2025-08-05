@@ -255,3 +255,29 @@
     transform: none;
   }
 }
+
+// 自定义发布成功Toast样式
+:global(.publish-success-toast) {
+  .rv-toast {
+    min-width: 200px !important;
+    padding: 20px 30px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+    box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3) !important;
+    
+    .rv-toast__text {
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      color: white !important;
+      text-align: center !important;
+      line-height: 1.4 !important;
+    }
+  }
+  
+  // 确保Toast居中显示
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+}

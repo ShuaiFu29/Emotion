@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Button, Field, NavBar, Uploader, Tag, ActionSheet } from 'react-vant'
 import { PhotoO, DeleteO, Add } from '@react-vant/icons'
-import { Toast } from '@/utils/toast'
+import { Toast } from 'react-vant'
 import useDiaryStore from '@/store/diaryStore'
 import './index.less'
 
@@ -114,7 +114,11 @@ const Publish = () => {
       console.log('发布结果:', result)
       
       if (result.success) {
-        Toast.success('发布成功！')
+        Toast.success({
+          message: '🎉 发布成功！',
+          duration: 2000,
+          className: 'publish-success-toast'
+        })
         
         // 跨标签通信：通知其他标签页更新数据
         try {

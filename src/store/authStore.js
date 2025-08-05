@@ -229,11 +229,11 @@ const useAuthStore = create((set, get) => ({
       }
       
       // 更新本地用户信息 - 使用后端返回的最新数据
-      set(state => ({
+      set({
         user: data.data.user, // 使用后端返回的完整用户数据
         loading: false,
         error: null
-      }))
+      })
       
       return { success: true }
     } catch (networkError) {

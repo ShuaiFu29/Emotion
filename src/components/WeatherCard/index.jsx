@@ -45,10 +45,18 @@ const WeatherCard = ({ className = '' }) => {
     }
   }, [getCurrentWeather, getWeatherByCity])
 
-  // 处理城市搜索（防抖版本）
+  // 防抖定时器引用
+  const searchTimeoutRef = React.useRef(null)
+
+  // 处理城市搜索（优化防抖版本）
   const handleCitySearch = useCallback(
     (keyword) => {
-      const timeoutId = setTimeout(async () => {
+      // 清除之前的定时器
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+
+      searchTimeoutRef.current = setTimeout(async () => {
         if (!keyword || keyword.trim().length === 0) {
           clearSearchResults()
           setShowSearchResults(false)
@@ -62,7 +70,6 @@ const WeatherCard = ({ className = '' }) => {
           setShowSearchResults(false)
         }
       }, 300)
-      return () => clearTimeout(timeoutId)
     },
     [clearSearchResults, searchCities]
   )
@@ -75,12 +82,19 @@ const WeatherCard = ({ className = '' }) => {
   }
 
   // 选择搜索结果
-  const handleSelectCity = (city) => {
-    fetchWeatherData(city.name)
-    setShowInput(false)
-    setShowSearchResults(false)
-    setInputLocation('')
-    clearSearchResults()
+  const handleSelectCity = async (city) => {
+    try {
+      // 立即更新UI状态
+      setShowInput(false)
+      setShowSearchResults(false)
+      setInputLocation('')
+      clearSearchResults()
+      
+      // 获取新城市的天气数据
+      await fetchWeatherData(city.name)
+    } catch (error) {
+      console.error('选择城市后获取天气数据失败:', error)
+    }
   }
 
   // 直接搜索当前输入
@@ -114,6 +128,15 @@ const WeatherCard = ({ className = '' }) => {
   useEffect(() => {
     fetchWeatherData()
   }, [fetchWeatherData])
+
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleRefresh = () => {
     fetchWeatherData()
