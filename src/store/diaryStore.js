@@ -121,26 +121,35 @@ const useDiaryStore = create((set, get) => ({
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      // 模拟获取日记详情
-      const mockDiary = {
-        id,
-        title: '日记详情',
-        content: '这是一篇详细的日记内容...',
-        mood: 'happy',
-        weather: '晴',
-        location: '北京',
-        images: [],
-        tags: ['标签1', '标签2'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+      // 从全局存储中查找真实数据
+      let globalDiaries = []
+      try {
+        const storedDiaries = localStorage.getItem('global_diaries')
+        if (storedDiaries) {
+          globalDiaries = JSON.parse(storedDiaries)
+        }
+      } catch (e) {
+        console.warn('读取全局日记数据失败:', e)
       }
       
-      set({
-        currentDiary: mockDiary,
-        loading: false
-      })
+      // 在全局数据中查找指定ID的日记
+      const foundDiary = globalDiaries.find(diary => diary.id === id)
       
-      return { success: true, data: mockDiary }
+      if (foundDiary) {
+        set({
+          currentDiary: foundDiary,
+          loading: false
+        })
+        return { success: true, data: foundDiary }
+      }
+      
+      // 如果找不到日记，返回错误
+      const errorMessage = '日记不存在或已被删除'
+      set({
+        loading: false,
+        error: errorMessage
+      })
+      return { success: false, error: errorMessage }
     } catch (error) {
       const errorMessage = error.message || '获取日记详情失败'
       set({

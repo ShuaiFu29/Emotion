@@ -1,14 +1,52 @@
 /* 详情页样式 - 清新天蓝色系 */
 .detail-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f5f9ff 100%);
   padding-bottom: 80px;
 }
 
+/* 导航栏样式 */
 .detail-navbar {
-  background: #ffffff;
-  border-bottom: 1px solid #81d4fa;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(70, 130, 180, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  height: 56px;
+}
+
+.nav-back-btn {
+  background: none;
+  border: none;
+  color: #4682B4;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.nav-back-btn:hover {
+  background-color: rgba(70, 130, 180, 0.1);
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.nav-placeholder {
+  width: 60px;
 }
 
 .detail-navbar .rv-nav-bar__title {
@@ -113,13 +151,14 @@
 }
 
 .detail-tag {
-  background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%) !important;
-  color: #1976d2 !important;
-  border: 1px solid #42a5f5 !important;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #4682B4, #5a9bd4);
+  color: white;
+  border-radius: 12px;
   font-size: 12px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  display: inline-block;
 }
 
 /* 统计信息 */
@@ -160,44 +199,151 @@
 
 .action-btn {
   flex: 1;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  margin: 0 4px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #666;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(70, 130, 180, 0.2);
 }
 
 .action-btn.liked {
-  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
-  color: #ffffff !important;
-  border-color: #dc2626 !important;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white;
+  border-color: #ff6b6b;
 }
 
 .action-btn.starred {
-  background: linear-gradient(135deg, #2196f3 0%, #03a9f4 100%) !important;
-  color: #ffffff !important;
-  border-color: #2196f3 !important;
+  background: linear-gradient(135deg, #ffd93d, #ffed4e);
+  color: #333;
+  border-color: #ffd93d;
 }
 
-.action-btn:not(.liked):not(.starred) {
-  background: linear-gradient(135deg, #e0f2fe 0%, #81d4fa 100%);
-  color: #1976d2;
-  border: 1px solid #42a5f5;
+.btn-icon {
+  font-size: 16px;
 }
 
-.action-btn:not(.liked):not(.starred):hover {
-  background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
-  color: #ffffff;
-  transform: translateY(-1px);
+.like-icon {
+  font-size: 16px;
+  transition: transform 0.2s;
 }
 
-/* 错误页面 */
+.like-icon.liked {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 4px rgba(255, 107, 107, 0.5));
+}
+
+/* 错误页面样式 */
 .detail-error {
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f5f9ff 100%);
+  display: flex;
+  flex-direction: column;
 }
 
 .error-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 40px 20px;
   text-align: center;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #4682B4, #5a9bd4);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+}
+
+/* 自定义 Toast 样式 */
+.custom-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  min-width: 280px;
+  padding: 20px 30px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+.custom-toast.custom-toast-success {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4);
+}
+
+.custom-toast.custom-toast-error {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+  color: white;
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
+  font-size: 20px;
+  font-weight: 700;
+  animation: toastErrorShake 0.6s ease-out;
+  border: 3px solid #FF3030;
+}
+
+.custom-toast.custom-toast-info {
+  background: linear-gradient(135deg, #87CEEB 0%, #5DADE2 100%);
+  color: white;
+  box-shadow: 0 8px 32px rgba(135, 206, 235, 0.4);
+}
+
+/* Toast 动画 */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 错误提示特殊动画 */
+@keyframes toastErrorShake {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(-1deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(1deg);
+  }
 }
 
 .error-content p {

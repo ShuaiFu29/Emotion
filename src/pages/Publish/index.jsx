@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react'
-import { Button, Field, NavBar, Uploader, Tag, ActionSheet } from 'react-vant'
-import { PhotoO, DeleteO, Add } from '@react-vant/icons'
-import { Toast } from 'react-vant'
+import { Button, Field, NavBar, Uploader, ActionSheet } from 'react-vant'
+import { PhotoO, DeleteO } from '@react-vant/icons'
 import useDiaryStore from '@/store/diaryStore'
 import './index.less'
 
@@ -11,14 +10,13 @@ const Publish = () => {
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('')
   const [images, setImages] = useState([])
-  const [tags, setTags] = useState([])
-  const [newTag, setNewTag] = useState('')
   const [mood, setMood] = useState('')
   const [weather, setWeather] = useState('')
 
   const [showMoodSheet, setShowMoodSheet] = useState(false)
   const [showWeatherSheet, setShowWeatherSheet] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [customToast, setCustomToast] = useState({ show: false, message: '', type: 'info' })
   const fileInputRef = useRef(null)
 
   // 心情选项
@@ -67,18 +65,7 @@ const Publish = () => {
     })
   }
 
-  // 添加标签
-  const handleAddTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim()) && tags.length < 5) {
-      setTags(prev => [...prev, newTag.trim()])
-      setNewTag('')
-    }
-  }
 
-  // 删除标签
-  const handleDeleteTag = (tagToDelete) => {
-    setTags(prev => prev.filter(tag => tag !== tagToDelete))
-  }
 
   // 选择心情
   const handleMoodSelect = (selectedMood) => {
@@ -92,9 +79,16 @@ const Publish = () => {
     setShowWeatherSheet(false)
   }
 
+  const showToast = (message, type = 'info') => {
+    setCustomToast({ show: true, message, type })
+    setTimeout(() => {
+      setCustomToast({ show: false, message: '', type: 'info' })
+    }, 3000)
+  }
+
   const handlePublish = async () => {
     if (!title.trim() || !content.trim()) {
-      Toast.fail('请填写标题和内容')
+      showToast('请填写标题和内容', 'error')
       return
     }
 
@@ -104,7 +98,6 @@ const Publish = () => {
           title: title.trim(),
           content: content.trim(),
           images: images.map(img => img.url || img.content),
-          tags,
           mood,
           weather
         }
@@ -114,11 +107,7 @@ const Publish = () => {
       console.log('发布结果:', result)
       
       if (result.success) {
-        Toast.success({
-          message: '🎉 发布成功！',
-          duration: 2000,
-          className: 'publish-success-toast'
-        })
+        showToast('🎉 发布成功！', 'success')
         
         // 跨标签通信：通知其他标签页更新数据
         try {
@@ -143,25 +132,25 @@ const Publish = () => {
               window.close()
             } else {
               // 如果无法关闭，显示提示并跳转到主页
-              Toast.success('正在返回主页...', 2000)
+              showToast('正在返回主页...', 'success')
               setTimeout(() => {
                 window.location.href = '/'
               }, 2000)
             }
           } catch {
             console.log('无法自动关闭标签页，跳转到主页')
-            Toast.success('正在返回主页...', 2000)
+            showToast('正在返回主页...', 'success')
             setTimeout(() => {
               window.location.href = '/'
             }, 2000)
           }
         }, 1500)
       } else {
-        Toast.fail(result.error || '发布失败，请重试')
+        showToast(result.error || '发布失败，请重试', 'error')
       }
     } catch (error) {
       console.error('发布失败:', error)
-      Toast.fail('发布失败，请重试')
+      showToast('发布失败，请重试', 'error')
     } finally {
       setPublishing(false)
     }
@@ -239,7 +228,7 @@ const Publish = () => {
             onChange={(e) => {
               const files = Array.from(e.target.files || [])
               if (files.length + images.length > 9) {
-                Toast.fail('最多只能上传9张图片')
+                showToast('最多只能上传9张图片', 'error')
                 return
               }
               handleImageUpload(files)
@@ -268,43 +257,7 @@ const Publish = () => {
           </div>
         </div>
 
-        {/* 标签管理 */}
-        <div className="tags-section">
-          <div className="section-title">添加标签</div>
-          <div className="tags-input">
-            <Field
-              value={newTag}
-              onChange={setNewTag}
-              placeholder="输入标签"
-              maxLength={10}
-            />
-            <Button 
-              type="primary" 
-              size="small"
-              onClick={handleAddTag}
-              disabled={!newTag.trim() || tags.length >= 5}
-            >
-              添加
-            </Button>
-          </div>
-          {tags.length > 0 && (
-            <div className="tags-list">
-              {tags.map((tag, index) => (
-                <Button
-                  key={index}
-                  size="mini"
-                  className="tag-item"
-                  onClick={() => handleDeleteTag(tag)}
-                >
-                  {tag} ×
-                </Button>
-              ))}
-            </div>
-          )}
-          {tags.length >= 5 && (
-            <div className="tag-limit-tip">最多添加5个标签</div>
-          )}
-        </div>
+
 
         {/* 发布按钮 */}
         <div className="publish-actions">
@@ -343,6 +296,13 @@ const Publish = () => {
         }))}
         closeable={false}
       />
+
+      {/* 自定义 Toast */}
+      {customToast.show && (
+        <div className={`custom-toast custom-toast-${customToast.type}`}>
+          {customToast.message}
+        </div>
+      )}
     </div>
   )
 }
