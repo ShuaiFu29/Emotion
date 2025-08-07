@@ -259,6 +259,20 @@ const useDiaryStore = create((set, get) => ({
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 500))
       
+      // 从localStorage的全局数据中删除
+      try {
+        let globalDiaries = []
+        const storedDiaries = localStorage.getItem('global_diaries')
+        if (storedDiaries) {
+          globalDiaries = JSON.parse(storedDiaries)
+        }
+        const filteredGlobalDiaries = globalDiaries.filter(diary => diary.id !== id)
+        localStorage.setItem('global_diaries', JSON.stringify(filteredGlobalDiaries))
+        console.log('已从全局数据中删除日记:', id)
+      } catch (e) {
+        console.warn('删除全局日记数据失败:', e)
+      }
+      
       // 从列表中移除
       const currentDiaries = get().diaries
       const filteredDiaries = currentDiaries.filter(diary => diary.id !== id)

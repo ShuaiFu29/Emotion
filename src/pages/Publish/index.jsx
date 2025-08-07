@@ -2,11 +2,13 @@ import { useState, useRef } from 'react'
 import { Button, Field, NavBar, Uploader, ActionSheet } from 'react-vant'
 import { PhotoO, DeleteO } from '@react-vant/icons'
 import useDiaryStore from '@/store/diaryStore'
+import useAuthStore from '@/store/authStore'
 import './index.less'
 
 const Publish = () => {
 
   const { createDiary } = useDiaryStore()
+  const { user } = useAuthStore()
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('')
   const [images, setImages] = useState([])
@@ -43,26 +45,37 @@ const Publish = () => {
 
   // 处理图片上传
   const handleImageUpload = (files) => {
-    const newImages = files.map(file => ({
-      id: Date.now() + Math.random(),
-      file,
-      url: URL.createObjectURL(file),
-      content: file
-    }))
-    setImages(prev => [...prev, ...newImages])
+    files.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const base64 = e.target.result
+        console.log('图片转换为base64:', {
+          fileName: file.name,
+          fileSize: file.size,
+          base64Length: base64.length,
+          isBase64: base64.startsWith('data:'),
+          preview: base64.substring(0, 50) + '...'
+        })
+        
+        // 确保只存储base64数据，不保留file对象
+        const newImage = {
+          id: Date.now() + Math.random(),
+          url: base64,
+          content: base64
+        }
+        setImages(prev => [...prev, newImage])
+      }
+      reader.onerror = (error) => {
+        console.error('图片读取失败:', error)
+        showToast('图片读取失败，请重试', 'error')
+      }
+      reader.readAsDataURL(file)
+    })
   }
 
   // 删除图片
   const handleImageDelete = (imageId) => {
-    setImages(prev => {
-      const updated = prev.filter(img => img.id !== imageId)
-      // 清理URL对象
-      const deletedImg = prev.find(img => img.id === imageId)
-      if (deletedImg && deletedImg.url) {
-        URL.revokeObjectURL(deletedImg.url)
-      }
-      return updated
-    })
+    setImages(prev => prev.filter(img => img.id !== imageId))
   }
 
 
@@ -94,12 +107,24 @@ const Publish = () => {
 
     setPublishing(true)
     try {
+      const imageData = images.map(img => img.content || img.url)
+      console.log('准备发布的图片数据:', imageData.map((img, index) => ({
+        index,
+        type: typeof img,
+        isBase64: img && img.startsWith && img.startsWith('data:'),
+        isBlob: img && img.startsWith && img.startsWith('blob:'),
+        length: img ? img.length : 0,
+        preview: img ? img.substring(0, 50) + '...' : 'null'
+      })))
+      
       const diaryData = {
           title: title.trim(),
           content: content.trim(),
-          images: images.map(img => img.url || img.content),
+          images: imageData,
           mood,
-          weather
+          weather,
+          authorId: user?.id,
+          author: user?.username || user?.nickname || '匿名用户'
         }
 
       console.log('开始发布日记:', diaryData)

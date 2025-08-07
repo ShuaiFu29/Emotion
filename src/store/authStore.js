@@ -129,10 +129,13 @@ const useAuthStore = create((set, get) => ({
   logout: () => {
     // 清除cookie中的token
     Cookies.remove('token')
-    // 清除localStorage中可能存在的认证数据
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    localStorage.removeItem('authData')
+    
+    // 清除localStorage中的认证数据，但保留用户数据如日记等
+    const authKeys = ['token', 'user', 'authData', 'auth_token', 'user_info']
+    authKeys.forEach(key => {
+      localStorage.removeItem(key)
+    })
+    
     // 重置状态
     set({
       user: null,
@@ -145,10 +148,18 @@ const useAuthStore = create((set, get) => ({
 
   // 强制清除所有认证数据（用于调试）
   forceLogout: () => {
-    // 清除所有可能的存储
+    // 清除认证相关的存储，但保留用户数据
     Cookies.remove('token')
-    localStorage.clear()
+    
+    // 只清除认证相关的localStorage项，保留日记等用户数据
+    const authKeys = ['token', 'user', 'authData', 'auth_token', 'user_info']
+    authKeys.forEach(key => {
+      localStorage.removeItem(key)
+    })
+    
+    // 清除所有sessionStorage（通常只存临时数据）
     sessionStorage.clear()
+    
     // 重置状态
     set({
       user: null,
@@ -157,6 +168,7 @@ const useAuthStore = create((set, get) => ({
       loading: false,
       error: null
     })
+    
     // 刷新页面确保状态完全重置
     window.location.reload()
   },

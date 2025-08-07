@@ -46,6 +46,7 @@ const Account = () => {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const [customToast, setCustomToast] = useState({ show: false, message: '', type: 'info' })
   const [avatarPreview, setAvatarPreview] = useState(null)
+  const [avatarPreviewSource, setAvatarPreviewSource] = useState(null) // 'upload' | 'ai_generate' | null
   const [isUploading, setIsUploading] = useState(false)
   const [uploadOperation, setUploadOperation] = useState(null) // 'upload' | 'ai_generate' | null
   const fileInputRef = useRef(null)
@@ -187,6 +188,7 @@ const Account = () => {
     reader.onload = (e) => {
       try {
         setAvatarPreview(e.target.result)
+        setAvatarPreviewSource('upload')
         showCustomToast('图片预览已生成，请确认上传', 'info')
       } catch (error) {
         console.error('文件读取失败:', error)
@@ -272,6 +274,7 @@ const Account = () => {
       
       // 清理预览状态并关闭弹窗
       setAvatarPreview(null)
+      setAvatarPreviewSource(null)
       setShowAvatarActions(false)
     } catch (error) {
       console.error('头像上传失败:', error)
@@ -293,6 +296,7 @@ const Account = () => {
     }
     
     setAvatarPreview(null)
+    setAvatarPreviewSource(null)
     setIsUploading(false)
     setUploadOperation(null)
   }
@@ -312,6 +316,7 @@ const Account = () => {
       }
       
       setAvatarPreview(null)
+      setAvatarPreviewSource(null)
       setShowAvatarActions(false)
     } catch (error) {
       console.error('删除头像失败:', error)
@@ -319,7 +324,7 @@ const Account = () => {
     }
   }
 
-  // AI生成头像功能 - 使用豆包大模型API
+  // AI生成头像功能 - 使用豆包大模型API，生成后进入预览状态
   const handleAIGenerateAvatar = async () => {
     if (isUploading || uploadOperation) {
       showCustomToast('正在处理中，请稍候...', 'info')
@@ -341,18 +346,11 @@ const Account = () => {
         1000 // 重试间隔1秒
       )
       
-      // 保存到localStorage确保持久化
-      localStorage.setItem(`avatar_${user?.id || 'default'}`, avatarUrl)
+      // 设置为预览状态，而不是直接上传
+      setAvatarPreview(avatarUrl)
+      setAvatarPreviewSource('ai_generate')
+      showCustomToast('AI头像生成成功，请确认上传', 'success')
       
-      // 更新用户信息到authStore
-      if (updateUserInfo) {
-        await updateUserInfo({ avatar: avatarUrl })
-        showCustomToast('AI头像生成成功', 'success')
-      } else {
-        showCustomToast('AI头像生成成功', 'success')
-      }
-      
-      setShowAvatarActions(false)
     } catch (error) {
       console.error('AI头像生成失败:', error)
       showCustomToast(`AI头像生成失败: ${error.message}`, 'error')
@@ -360,6 +358,15 @@ const Account = () => {
       setIsUploading(false)
       setUploadOperation(null)
     }
+  }
+
+  // 重新生成AI头像
+  const handleRegenerateAIAvatar = async () => {
+    // 清除当前预览
+    setAvatarPreview(null)
+    setAvatarPreviewSource(null)
+    // 重新生成
+    await handleAIGenerateAvatar()
   }
 
   const handleSaveUserInfo = async () => {
@@ -408,7 +415,7 @@ const Account = () => {
       {/* 四宫格统计区域 */}
       <div className="statsContainer">
         {userStats.map((stat, index) => (
-          <div key={index} className="statsItem">
+          <div key={`stat-${stat.label}-${index}`} className="statsItem">
             <div className="statsValue">{stat.value}</div>
             <div className="statsLabel">{stat.label}</div>
             <div className="statsUnit">{stat.unit}</div>
@@ -422,7 +429,7 @@ const Account = () => {
       <div className="gridContainer">
         {gridItems.map((item, index) => (
           <div
-            key={index}
+            key={`grid-${item.text}-${index}`}
             onClick={() => handleGridItemClick(item)}
             className="gridItem"
           >
@@ -438,7 +445,7 @@ const Account = () => {
       <ActionSheet
         visible={showAvatarActions}
         onCancel={() => setShowAvatarActions(false)}
-        title={isUploading ? '处理中...' : (avatarPreview ? '确认上传' : '选择头像操作')}
+        title={isUploading ? '处理中...' : (avatarPreview ? (avatarPreviewSource === 'ai_generate' ? '确认AI生成头像' : '确认上传头像') : '选择头像操作')}
         closeable={false}
         actions={[
           // 如果有预览图片，显示确认和取消选项
@@ -453,7 +460,8 @@ const Account = () => {
                 }
               }
             },
-            {
+            // 根据预览来源显示不同的重新选择选项
+            ...(avatarPreviewSource === 'upload' ? [{
               name: '重新选择',
               disabled: isUploading,
               callback: () => {
@@ -462,7 +470,17 @@ const Account = () => {
                   handleAvatarUpload()
                 }
               }
-            },
+            }] : []),
+            ...(avatarPreviewSource === 'ai_generate' ? [{
+              name: '重新生成',
+              color: '#1989fa',
+              disabled: isUploading,
+              callback: () => {
+                if (!isUploading) {
+                  handleRegenerateAIAvatar()
+                }
+              }
+            }] : []),
             {
               name: '取消',
               disabled: isUploading,
@@ -529,7 +547,7 @@ const Account = () => {
             }}
           >
             <div style={{ marginBottom: '15px', fontSize: '14px', color: '#666' }}>
-              头像预览
+              {avatarPreviewSource === 'ai_generate' ? 'AI生成头像预览' : '头像预览'}
             </div>
             <img
               src={avatarPreview}

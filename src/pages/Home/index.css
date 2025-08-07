@@ -1,7 +1,8 @@
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-  padding-bottom: 80px;
+  background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+  padding-bottom: 0.06667rem;
+  position: relative;
 }
 .weather-section {
   padding: 20px 16px 16px 16px;

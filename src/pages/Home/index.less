@@ -1,7 +1,11 @@
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-  padding-bottom: 80px; // 为底部导航栏留出空间
+  background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+  padding-bottom: 0.06667rem;
+  // 为底部导航栏留出空间
+  position: relative;
+
+  // 移除底部渐变遮罩，避免导航栏被染色
 }
 
 .weather-section {
@@ -15,7 +19,7 @@
 .section-header {
   margin-bottom: 20px;
   text-align: center;
-  
+
   .section-title {
     color: white;
     font-size: 24px;
@@ -23,7 +27,7 @@
     margin: 0 0 8px 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .section-subtitle {
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
@@ -37,16 +41,16 @@
   .weather-section {
     padding: 16px 12px 12px 12px;
   }
-  
+
   .content-section {
     padding: 0 12px;
   }
-  
+
   .section-header {
     .section-title {
       font-size: 20px;
     }
-    
+
     .section-subtitle {
       font-size: 13px;
     }

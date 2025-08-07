@@ -341,6 +341,7 @@ export const searchCities = async (keyword) => {
         city: item.city,
         province: item.province,
         district: item.district,
+        code: item.adcode, // 使用code字段保持一致性
         adcode: item.adcode,
         location: item.location
       })).slice(0, 10); // 限制返回10个结果
