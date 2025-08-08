@@ -31,7 +31,7 @@ export const ENV = {
  * API配置
  */
 export const API_CONFIG = {
-  BASE_URL: process.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   TIMEOUT: 10000,
   RETRY_TIMES: 3,
   RETRY_DELAY: 1000
@@ -546,7 +546,7 @@ export const DEFAULT_CONFIG = {
  * @returns {any} 环境变量值
  */
 export const getEnvVar = (key, defaultValue = null) => {
-  return import.meta.env[key] || process.env[key] || defaultValue
+  return import.meta.env[key] || defaultValue
 }
 
 /**

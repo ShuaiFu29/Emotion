@@ -186,7 +186,7 @@ const useDiaryStore = create((set, get) => ({
         // 添加新日记到全局数据
         globalDiaries.unshift(newDiary)
         localStorage.setItem('global_diaries', JSON.stringify(globalDiaries))
-        console.log('新日记已保存到全局数据:', newDiary)
+        // console.log('新日记已保存到全局数据:', newDiary)
       } catch (e) {
         console.warn('保存全局日记数据失败:', e)
       }
@@ -268,7 +268,7 @@ const useDiaryStore = create((set, get) => ({
         }
         const filteredGlobalDiaries = globalDiaries.filter(diary => diary.id !== id)
         localStorage.setItem('global_diaries', JSON.stringify(filteredGlobalDiaries))
-        console.log('已从全局数据中删除日记:', id)
+        // console.log('已从全局数据中删除日记:', id)
       } catch (e) {
         console.warn('删除全局日记数据失败:', e)
       }

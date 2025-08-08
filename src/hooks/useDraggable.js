@@ -261,9 +261,8 @@ const useDraggable = (options = {}) => {
 
   /**
    * 结束拖拽
-   * @param {MouseEvent|TouchEvent} event - 事件对象
    */
-  const handleDragEnd = useCallback((event) => {
+  const handleDragEnd = useCallback(() => {
     if (disabled) return
 
     const wasDragging = dragState.isDragging
@@ -330,7 +329,7 @@ const useDraggable = (options = {}) => {
     const handleGlobalMouseMove = (event) => handleDragMove(event)
     const handleGlobalMouseUp = (event) => handleDragEnd(event)
     const handleGlobalTouchMove = (event) => handleDragMove(event)
-    const handleGlobalTouchEnd = (event) => handleDragEnd(event)
+    const handleGlobalTouchEnd = (_event) => handleDragEnd(_event)
 
     document.addEventListener('mousemove', handleGlobalMouseMove)
     document.addEventListener('mouseup', handleGlobalMouseUp)

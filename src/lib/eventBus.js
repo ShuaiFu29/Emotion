@@ -97,7 +97,7 @@ class EventBus {
     }
 
     if (this.debug) {
-      console.log(`[EventBus] 添加监听器: ${event}`, listener)
+      // console.log(`[EventBus] 添加监听器: ${event}`, listener)
     }
 
     // 返回取消监听的函数
@@ -132,7 +132,7 @@ class EventBus {
       // 移除所有监听器
       listeners.length = 0
       if (this.debug) {
-        console.log(`[EventBus] 移除所有监听器: ${event}`)
+        // console.log(`[EventBus] 移除所有监听器: ${event}`)
       }
       return
     }
@@ -148,7 +148,7 @@ class EventBus {
         
         listeners.splice(i, 1)
         if (this.debug) {
-          console.log(`[EventBus] 移除监听器: ${event}`, listener)
+          // console.log(`[EventBus] 移除监听器: ${event}`, listener)
         }
       }
     }
@@ -173,7 +173,7 @@ class EventBus {
         if (listeners[i].options.namespace === namespace) {
           listeners.splice(i, 1)
           if (this.debug) {
-            console.log(`[EventBus] 移除命名空间监听器: ${namespace}.${event}`)
+            // console.log(`[EventBus] 移除命名空间监听器: ${namespace}.${event}`)
           }
         }
       }
@@ -201,7 +201,7 @@ class EventBus {
 
     if (!this.events.has(event)) {
       if (this.debug) {
-        console.log(`[EventBus] 没有监听器: ${event}`)
+        // console.log(`[EventBus] 没有监听器: ${event}`)
       }
       return false
     }
@@ -210,7 +210,7 @@ class EventBus {
     let hasHandled = false
 
     if (this.debug) {
-      console.log(`[EventBus] 发布事件: ${event}`, args, `监听器数量: ${listeners.length}`)
+      // console.log(`[EventBus] 发布事件: ${event}`, args, `监听器数量: ${listeners.length}`)
     }
 
     for (let i = 0; i < listeners.length; i++) {
@@ -260,7 +260,7 @@ class EventBus {
 
     if (!this.events.has(event)) {
       if (this.debug) {
-        console.log(`[EventBus] 没有监听器: ${event}`)
+        // console.log(`[EventBus] 没有监听器: ${event}`)
       }
       return []
     }
@@ -269,7 +269,7 @@ class EventBus {
     const results = []
 
     if (this.debug) {
-      console.log(`[EventBus] 异步发布事件: ${event}`, args, `监听器数量: ${listeners.length}`)
+      // console.log(`[EventBus] 异步发布事件: ${event}`, args, `监听器数量: ${listeners.length}`)
     }
 
     for (const listener of listeners) {
@@ -348,7 +348,7 @@ class EventBus {
     this.events.clear()
     this.history.length = 0
     if (this.debug) {
-      console.log('[EventBus] 清除所有监听器')
+      // console.log('[EventBus] 清除所有监听器')
     }
   }
 

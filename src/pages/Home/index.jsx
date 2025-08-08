@@ -155,7 +155,7 @@ const Home = () => {
     channel.onmessage = (event) => {
       if (event.data.type === 'NEW_DIARY_PUBLISHED') {
         // 当收到新日记发布通知时，重新加载数据
-        console.log('收到新日记发布通知，重新加载数据', event.data)
+        // console.log('收到新日记发布通知，重新加载数据', event.data)
         // 使用loadInitialData来确保完全重新加载数据
         loadInitialData()
       }

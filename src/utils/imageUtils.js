@@ -6,12 +6,12 @@
  */
 export const cleanupBlobUrls = () => {
   try {
-    console.log('开始清理localStorage中的Blob URL数据...')
+    // console.log('开始清理localStorage中的Blob URL数据...')
     
     // 获取全局日记数据
     const storedDiaries = localStorage.getItem('global_diaries')
     if (!storedDiaries) {
-      console.log('没有找到全局日记数据')
+      // console.log('没有找到全局日记数据')
       return
     }
     
@@ -40,9 +40,9 @@ export const cleanupBlobUrls = () => {
     // 如果有变化，保存回localStorage
     if (hasChanges) {
       localStorage.setItem('global_diaries', JSON.stringify(globalDiaries))
-      console.log('已清理localStorage中的Blob URL数据')
+      // console.log('已清理localStorage中的Blob URL数据')
     } else {
-      console.log('没有发现需要清理的Blob URL数据')
+      // console.log('没有发现需要清理的Blob URL数据')
     }
     
   } catch (error) {

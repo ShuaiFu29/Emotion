@@ -1,13 +1,14 @@
 /* 强制缓存清除 - 版本 2024.1.15.3 */
 .waterfall-container {
-  padding: 12px 12px 40px 12px; /* 增加底部padding */
+  padding: 12px 12px 40px 12px;
+  /* 增加底部padding */
   background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%) !important;
   min-height: 100vh;
   /* 强制重新渲染 */
   transform: translateZ(0);
   will-change: auto;
   position: relative;
-  
+
   /* 底部装饰渐变 */
   &::after {
     content: '';
@@ -16,16 +17,15 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: linear-gradient(to top, 
-      rgba(179, 229, 252, 0.9) 0%,
-      rgba(179, 229, 252, 0.6) 30%,
-      rgba(179, 229, 252, 0.3) 60%,
-      transparent 100%
-    );
+    background: linear-gradient(to top,
+        rgba(179, 229, 252, 0.9) 0%,
+        rgba(179, 229, 252, 0.6) 30%,
+        rgba(179, 229, 252, 0.3) 60%,
+        transparent 100%);
     pointer-events: none;
     z-index: 1;
   }
-  
+
   /* 底部装饰点 */
   &::before {
     content: '';
@@ -57,15 +57,18 @@
 
 @media (min-width: 768px) {
   .waterfall-container {
-    padding: 16px 16px 50px 16px; /* 桌面端增加更多底部空间 */
+    padding: 16px 16px 50px 16px;
+    /* 桌面端增加更多底部空间 */
   }
+
   .waterfall-grid {
     gap: 16px;
   }
+
   .waterfall-column {
     gap: 16px;
   }
-  
+
   /* 桌面端底部装饰点更大 */
   .waterfall-container::before {
     width: 60px;
@@ -79,21 +82,21 @@
   margin-bottom: 0;
 }
 
-/* 日记卡片样式 - 优化版瀑布流 */
+/* 日记卡片样式 - 现代化设计 */
 .diary-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(129, 212, 250, 0.3);
+  background: linear-gradient(135deg, #4dd0e1 0%, #26c6da 25%, #00acc1 50%, #0097a7 75%, #00838f 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 150, 136, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: none;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   opacity: 1;
   transform: none;
   cursor: pointer;
-  /* 移除固定高度，让JavaScript动态高度生效 */
   display: flex;
   flex-direction: column;
+  min-height: 280px;
 }
 
 .diary-card.visible {
@@ -101,192 +104,149 @@
   transform: none;
 }
 
-/* 添加温暖的橙色装饰条 */
-.diary-card::before {
-  content: '';
+/* 渐变叠加层已移除 - 让图片保持清晰显示 */
+
+.diary-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 150, 136, 0.25), 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* 图片预览样式 - 全屏背景 */
+.card-image-preview {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #2196f3 0%, #42a5f5 100%);
-}
-
-.diary-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(33, 150, 243, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #42a5f5;
-}
-
-/* 图片预览样式 */
-.card-image-preview {
-  width: 100%;
-  position: relative;
-  border-radius: 8px 8px 0 0;
+  bottom: 0;
+  border-radius: 20px;
   overflow: hidden;
-  background: #f5f5f5;
+  z-index: 0;
 }
 
 /* 单张图片样式 */
 .card-image-preview.single {
-  height: auto;
-  min-height: 140px;
-  max-height: 240px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
 }
 
 .card-image-preview.single img {
   width: 100%;
-  height: auto;
-  max-height: 240px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-  border-radius: 8px;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  filter: brightness(0.8) contrast(1.1);
 }
 
 .card-image-preview.single:hover img {
-  transform: scale(1.05);
+  transform: scale(1.1);
+  filter: brightness(0.9) contrast(1.2);
 }
 
 /* 两张图片样式 */
 .card-image-preview.double {
-  height: auto;
-  min-height: 120px;
-  max-height: 180px;
+  width: 100%;
+  height: 100%;
   display: flex;
-  gap: 4px;
-  background: #f8f9fa;
-  padding: 4px;
-  border-radius: 8px;
+  gap: 2px;
 }
 
 .card-image-preview.double .image-item {
   flex: 1;
-  height: auto;
-  min-height: 120px;
+  height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 6px;
 }
 
 .card-image-preview.double .image-item img {
   width: 100%;
-  height: auto;
-  max-height: 180px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  filter: brightness(0.8) contrast(1.1);
 }
 
 .card-image-preview.double:hover .image-item img {
-  transform: scale(1.05);
+  transform: scale(1.1);
+  filter: brightness(0.9) contrast(1.2);
 }
 
 /* 多张图片样式 */
 .card-image-preview.multiple {
-  height: auto;
-  min-height: 120px;
-  max-height: 180px;
+  width: 100%;
+  height: 100%;
   display: flex;
-  gap: 4px;
-  background: #f8f9fa;
-  padding: 4px;
-  border-radius: 8px;
+  gap: 2px;
 }
 
 .card-image-preview.multiple .main-image {
   flex: 2;
-  height: auto;
-  min-height: 120px;
+  height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 6px;
 }
 
 .card-image-preview.multiple .main-image img {
   width: 100%;
-  height: auto;
-  max-height: 180px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  filter: brightness(0.8) contrast(1.1);
 }
 
 .card-image-preview.multiple .sub-images {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .card-image-preview.multiple .sub-image {
   flex: 1;
-  height: auto;
-  min-height: 56px;
+  height: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 6px;
 }
 
 .card-image-preview.multiple .sub-image img {
   width: 100%;
-  height: auto;
-  max-height: 86px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  filter: brightness(0.8) contrast(1.1);
 }
 
 .card-image-preview.multiple:hover img {
-  transform: scale(1.05);
+  transform: scale(1.1);
+  filter: brightness(0.9) contrast(1.2);
 }
 
 /* 图片数量标识 */
 .image-count-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.25);
   color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  backdrop-filter: blur(4px);
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  z-index: 3;
 }
 
-/* 图片悬浮效果 */
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.card-image-preview:hover .image-overlay {
-  opacity: 1;
-}
-
-.preview-icon {
-  font-size: 24px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
+/* 图片悬浮效果已移除 - 保持图片清晰显示 */
 
 /* 卡片图片 - 抖音风格稳定显示 */
 .card-image {
@@ -309,117 +269,119 @@
   transform: none;
 }
 
-/* 卡片内容 - 优化布局 */
+/* 卡片内容 - 清晰布局 */
 .card-content {
-  padding: 18px;
-  flex: 1;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  position: relative;
-  min-height: 120px;
+  gap: 8px;
+  border-radius: 0 0 20px 20px;
 }
 
 .card-title {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #1a1a1a;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
 }
 
 .card-description {
   font-size: 14px;
-  color: #555;
-  line-height: 1.6;
+  color: #666666;
+  line-height: 1.5;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
   word-break: break-word;
 }
 
-/* 标签 - 温暖橙色系 */
+/* 标签 - 蓝色主题样式 */
 .card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: auto;
-  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .tag {
   background: linear-gradient(135deg, #e8f4fd, #d1e7f7);
   color: #1565c0;
-  padding: 5px 10px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
   border: 1px solid rgba(21, 101, 192, 0.15);
   transition: all 0.3s ease;
-  backdrop-filter: blur(2px);
 }
 
 .tag:hover {
   background: linear-gradient(135deg, #d1e7f7, #bbdefb);
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(21, 101, 192, 0.2);
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
   border-color: rgba(21, 101, 192, 0.3);
 }
 
-/* 卡片底部 - 抖音风格 */
+/* 卡片底部 - 透明覆盖样式 */
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  margin-top: auto;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.8));
-  border-radius: 0 0 8px 8px;
-  margin: 0 -16px -16px -16px;
-  padding: 12px 16px;
+  margin-top: 12px;
+  position: relative;
+  z-index: 3;
 }
 
 .card-date {
   font-size: 11px;
   color: #9ca3af;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .card-stats {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
 }
 
 .card-stats span {
-  font-size: 10px;
+  font-size: 11px;
   color: #6b7280;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+  font-weight: 500;
 }
 
-.likes, .views {
-  transition: none;
+.likes,
+.views {
+  transition: all 0.3s ease;
 }
 
 .diary-card:hover .likes {
-  color: #6b7280;
+  color: #2196f3;
+  transform: scale(1.1);
 }
 
 .diary-card:hover .views {
-  color: #6b7280;
+  color: #2196f3;
+  transform: scale(1.1);
 }
 
 /* 加载更多 */
@@ -461,121 +423,114 @@
 /* 响应式设计 */
 @media (max-width: 768px) {
   .waterfall-container {
-    padding: 0 12px 35px 12px; /* 移动端适当的底部空间 */
+    padding: 0 12px 35px 12px;
   }
-  
+
   .waterfall-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
-  
-  .waterfall-columns {
-    gap: 12px;
-  }
-  
+
   .waterfall-column {
     gap: 12px;
   }
-  
+
   .diary-card {
-    font-size: 13px;
+    min-height: 240px;
+    border-radius: 16px;
   }
-  
+
   .card-content {
-    padding: 12px;
+    padding: 18px 16px;
+    gap: 6px;
   }
-  
+
   .card-title {
-    font-size: 15px;
+    font-size: 16px;
+    -webkit-line-clamp: 2;
   }
-  
+
   .card-description {
     font-size: 13px;
+    -webkit-line-clamp: 2;
   }
-  
+
   .tag {
     font-size: 10px;
-    padding: 3px 6px;
+    padding: 3px 8px;
+    border-radius: 12px;
   }
-  
+
   .card-date {
-    font-size: 11px;
+    font-size: 10px;
   }
-  
-  .card-stats {
-    font-size: 11px;
+
+  .card-stats span {
+    font-size: 10px;
+    gap: 3px;
   }
-  
-  /* 移动端图片预览优化 */
-  .card-image-preview.single {
-    height: 120px;
-  }
-  
-  .card-image-preview.double,
-  .card-image-preview.multiple {
-    height: 100px;
-  }
-  
+
   .image-count-badge {
-    font-size: 11px;
-    padding: 3px 6px;
+    font-size: 10px;
+    padding: 4px 8px;
+    top: 8px;
+    right: 8px;
   }
-  
+
   .preview-icon {
-    font-size: 20px;
-  }
-  
-  .card-content {
-    padding: 12px;
-    gap: 8px;
+    font-size: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .waterfall-container {
-    padding: 0 8px 30px 8px; /* 小屏幕设备的底部空间 */
+    padding: 0 8px 30px 8px;
   }
-  
-  /* 小屏幕底部装饰点调整 */
+
   .waterfall-container::before {
     width: 30px;
     height: 3px;
     bottom: 15px;
   }
-  
-  .waterfall-columns {
-    gap: 8px;
-  }
-  
+
   .waterfall-column {
     gap: 8px;
   }
-  
+
   .diary-card {
-    border-radius: 12px;
+    min-height: 220px;
+    border-radius: 14px;
   }
-  
+
   .card-content {
-    padding: 10px;
+    padding: 16px 14px;
+    gap: 6px;
   }
-  
+
   .card-title {
-    font-size: 14px;
+    font-size: 15px;
+    letter-spacing: 0.3px;
   }
-  
+
   .card-description {
     font-size: 12px;
     -webkit-line-clamp: 2;
   }
-  
+
   .card-footer {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
+    flex-direction: row;
+    margin-top: 8px;
   }
-  
-  .card-stats {
-    align-self: flex-end;
+
+  .tag {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .image-count-badge {
+    font-size: 9px;
+    padding: 3px 6px;
+    top: 6px;
+    right: 6px;
   }
 }
 
@@ -625,8 +580,15 @@
 
 /* 创意动画效果 */
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
-  50% { transform: translateY(-2px) rotate(0.5deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-0.5deg);
+  }
+
+  50% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
 }
 
 .waterfall-item:nth-child(3n+1) .diary-card {

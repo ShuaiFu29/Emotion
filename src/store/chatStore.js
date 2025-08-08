@@ -655,7 +655,7 @@ const useChatStore = create((set, get) => ({
       }
       
       retryCount++;
-      console.log(`尝试重连 (${retryCount}/${maxRetries})...`);
+      // console.log(`尝试重连 (${retryCount}/${maxRetries})...`);
       
       const success = await get().checkConnection();
       
@@ -664,7 +664,7 @@ const useChatStore = create((set, get) => ({
         const delay = baseDelay * Math.pow(2, retryCount - 1);
         setTimeout(attemptReconnect, delay);
       } else {
-        console.log('重连成功');
+        // console.log('重连成功');
         retryCount = 0;
       }
     };
@@ -675,12 +675,12 @@ const useChatStore = create((set, get) => ({
   // 监听网络状态变化
   setupNetworkMonitoring: () => {
     const handleOnline = () => {
-      console.log('网络已连接');
+      // console.log('网络已连接');
       get().checkConnection();
     };
     
     const handleOffline = () => {
-      console.log('网络已断开');
+      // console.log('网络已断开');
       const errorInfo = getErrorInfo('网络连接已断开');
       set({
         connectionStatus: 'error',

@@ -14,7 +14,7 @@ const Login = () => {
   const { login, loading, error, isAuthenticated, clearError } = useAuthStore()
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   })
 
@@ -43,7 +43,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       return
     }
 
@@ -68,14 +68,14 @@ const Login = () => {
         )}
 
         <div className="form-group">
-          <label htmlFor="email">邮箱</label>
+          <label htmlFor="username">用户名/邮箱</label>
           <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
+            type="text"
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleInputChange}
-            placeholder="请输入您的邮箱"
+            placeholder="请输入您的用户名或邮箱"
             required
           />
         </div>

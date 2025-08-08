@@ -428,13 +428,14 @@ export const string = {
           }
           break
           
-        case 'email':
+        case 'email': {
           // 邮箱脱敏：abc***@example.com
           const emailMatch = str.match(/^(.{1,3}).*(@.+)$/)
           if (emailMatch) {
             return emailMatch[1] + '***' + emailMatch[2]
           }
           break
+        }
           
         case 'idCard':
           // 身份证脱敏：110***********1234
@@ -449,7 +450,7 @@ export const string = {
           
         case 'custom':
         case 'auto':
-        default:
+        default: {
           // 通用脱敏
           if (str.length <= keepStart + keepEnd) {
             return str
@@ -458,6 +459,7 @@ export const string = {
           const end = str.slice(-keepEnd)
           const maskLength = str.length - keepStart - keepEnd
           return start + maskChar.repeat(maskLength) + end
+        }
       }
       
       return str
@@ -625,11 +627,12 @@ export const object = {
                 params.push(`${encodedKey}=${encodedVal}`)
               })
               break
-            case 'comma':
+            case 'comma': {
               const encodedKey = encode ? encodeURIComponent(key) : key
               const encodedVal = encode ? encodeURIComponent(val.join(',')) : val.join(',')
               params.push(`${encodedKey}=${encodedVal}`)
               break
+            }
           }
         } else {
           const encodedKey = encode ? encodeURIComponent(key) : key

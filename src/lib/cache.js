@@ -281,7 +281,7 @@ class MemoryCache {
    */
   _startCleanup() {
     setInterval(() => {
-      const now = Date.now()
+      const _now = Date.now()
       for (const [key, item] of this.cache.entries()) {
         if (this._isExpired(item)) {
           this._expireItem(key)

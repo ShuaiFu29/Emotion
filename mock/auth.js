@@ -1,3 +1,5 @@
+/* global Buffer */
+
 // 模拟用户数据
 const users = [
   {

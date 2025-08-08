@@ -201,7 +201,8 @@ class HttpClient {
               return result
             }
           } catch (interceptorError) {
-            error = interceptorError
+            // 记录拦截器错误，但不重新赋值给error参数
+            console.error('Response interceptor error:', interceptorError)
           }
         }
       }
@@ -338,7 +339,7 @@ class HttpClient {
    * 取消所有请求
    */
   cancelAll() {
-    for (const [key, promise] of this.requestQueue.entries()) {
+    for (const [_key, promise] of this.requestQueue.entries()) {
       if (promise.cancel && typeof promise.cancel === 'function') {
         promise.cancel()
       }
@@ -780,13 +781,13 @@ export const interceptors = {
     return {
       request: (config) => {
         if (logRequest) {
-          console.log('🚀 Request:', config)
+          // console.log('🚀 Request:', config)
         }
         return config
       },
       response: (response) => {
         if (logResponse) {
-          console.log('✅ Response:', response)
+          // console.log('✅ Response:', response)
         }
         return response
       },

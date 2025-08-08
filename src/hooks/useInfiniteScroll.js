@@ -175,7 +175,7 @@ const useInfiniteScroll = (loadMore, options = {}, deps = []) => {
     } finally {
       isLoadingRef.current = false
     }
-  }, [enabled, state.hasMore, state.page, state.totalLoaded, loadMore, onLoadMore, handleError])
+  }, [enabled, state.hasMore, state.page, loadMore, onLoadMore, handleError])
 
   /**
    * 手动触发加载更多
@@ -227,10 +227,15 @@ const useInfiniteScroll = (loadMore, options = {}, deps = []) => {
   const handleIntersection = useCallback((entries) => {
     const [entry] = entries
     
-    if (entry && entry.isIntersecting && enabled && !isLoadingRef.current && state.hasMore) {
-      loadMoreManually()
+    if (entry && entry.isIntersecting && enabled && !isLoadingRef.current) {
+      setState(currentState => {
+        if (currentState.hasMore) {
+          loadMoreManually()
+        }
+        return currentState
+      })
     }
-  }, [enabled, state.hasMore, loadMoreManually])
+  }, [enabled, loadMoreManually])
 
   // 设置IntersectionObserver
   useEffect(() => {

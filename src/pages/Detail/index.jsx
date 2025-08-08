@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '@/components/Loading'
 import useDiaryStore from '@/store/diaryStore'
@@ -35,18 +35,18 @@ const Detail = () => {
         // 首先从已加载的日记列表中查找
         const existingDiary = diaries.find(d => d.id === id)
         if (existingDiary) {
-          console.log('找到现有日记:', existingDiary)
-          console.log('图片数据:', existingDiary.images)
+          // // console.log('找到现有日记:', existingDiary)
+          // console.log('图片数据:', existingDiary.images)
           if (existingDiary.images && existingDiary.images.length > 0) {
-            existingDiary.images.forEach((img, index) => {
-              console.log(`图片${index + 1}:`, {
-                type: typeof img,
-                isBase64: img && img.startsWith && img.startsWith('data:'),
-                isBlob: img && img.startsWith && img.startsWith('blob:'),
-                length: img ? img.length : 0,
-                preview: img ? img.substring(0, 50) + '...' : 'null'
-              })
-            })
+            // existingDiary.images.forEach((img, index) => {
+            //   console.log(`图片${index + 1}:`, {
+            //     type: typeof img,
+            //     isBase64: img && img.startsWith && img.startsWith('data:'),
+            //     isBlob: img && img.startsWith && img.startsWith('blob:'),
+            //     length: img ? img.length : 0,
+            //     preview: img ? img.substring(0, 50) + '...' : 'null'
+            //   })
+            // })
           }
           setDiary(existingDiary)
           // 增加浏览量
@@ -57,18 +57,18 @@ const Detail = () => {
         // 如果列表中没有，从store获取
         const result = await getDiary(id)
         if (result.success) {
-          console.log('从store获取的日记:', result.data)
-          console.log('图片数据:', result.data.images)
+          // console.log('从store获取的日记:', result.data)
+          // console.log('图片数据:', result.data.images)
           if (result.data.images && result.data.images.length > 0) {
-            result.data.images.forEach((img, index) => {
-              console.log(`图片${index + 1}:`, {
-                type: typeof img,
-                isBase64: img && img.startsWith && img.startsWith('data:'),
-                isBlob: img && img.startsWith && img.startsWith('blob:'),
-                length: img ? img.length : 0,
-                preview: img ? img.substring(0, 50) + '...' : 'null'
-              })
-            })
+            // result.data.images.forEach((img, index) => {
+            //   console.log(`图片${index + 1}:`, {
+            //     type: typeof img,
+            //     isBase64: img && img.startsWith && img.startsWith('data:'),
+            //     isBlob: img && img.startsWith && img.startsWith('blob:'),
+            //     length: img ? img.length : 0,
+            //     preview: img ? img.substring(0, 50) + '...' : 'null'
+            //   })
+            // })
           }
           setDiary(result.data)
           // 增加浏览量
@@ -85,7 +85,7 @@ const Detail = () => {
     if (id && !isDeleted) {
       fetchDiaryDetail()
     }
-  }, [id, diaries, getDiary, isDeleted])
+  }, [id, diaries, getDiary, isDeleted, showToast])
 
   // 增加浏览量
   const incrementViewCount = (diaryData) => {
@@ -95,19 +95,19 @@ const Detail = () => {
       const storedDiaries = localStorage.getItem('global_diaries')
       if (storedDiaries) {
         globalDiaries = JSON.parse(storedDiaries)
-        console.log('localStorage中的全局日记数据:', globalDiaries)
+        // console.log('localStorage中的全局日记数据:', globalDiaries)
         
         // 检查localStorage中的图片数据
         globalDiaries.forEach((diary, diaryIndex) => {
           if (diary.images && diary.images.length > 0) {
-            console.log(`localStorage日记${diaryIndex}的图片:`, diary.images.map((img, imgIndex) => ({
-              index: imgIndex,
-              type: typeof img,
-              isBase64: img && img.startsWith && img.startsWith('data:'),
-              isBlob: img && img.startsWith && img.startsWith('blob:'),
-              length: img ? img.length : 0,
-              preview: img ? img.substring(0, 50) + '...' : 'null'
-            })))
+            // console.log(`localStorage日记${diaryIndex}的图片:`, diary.images.map((img, imgIndex) => ({
+            //   index: imgIndex,
+            //   type: typeof img,
+            //   isBase64: img && img.startsWith && img.startsWith('data:'),
+            //   isBlob: img && img.startsWith && img.startsWith('blob:'),
+            //   length: img ? img.length : 0,
+            //   preview: img ? img.substring(0, 50) + '...' : 'null'
+            // })))
           }
         })
       }
@@ -132,10 +132,10 @@ const Detail = () => {
   }
 
   // 自定义 Toast 函数
-  const showToast = (message, type = 'info', duration = 3000) => {
+  const showToast = useCallback((message, type = 'info', duration = 3000) => {
     // 如果日记已被删除且是错误类型的提示，不显示
     if (isDeleted && type === 'error') {
-      console.log('日记已删除，忽略错误提示:', message)
+      // console.log('日记已删除，忽略错误提示:', message)
       return
     }
     
@@ -143,7 +143,7 @@ const Detail = () => {
     setTimeout(() => {
       setCustomToast({ show: false, message: '', type: 'info' })
     }, duration)
-  }
+  }, [isDeleted])
 
   // 处理点赞
   const handleLike = () => {
@@ -190,9 +190,9 @@ const Detail = () => {
     setIsDeleting(true)
     
     try {
-      console.log('开始删除日记:', diary.id)
+      // console.log('开始删除日记:', diary.id)
       const result = await deleteDiary(diary.id)
-      console.log('删除结果:', result)
+      // console.log('删除结果:', result)
       
       if (result.success) {
         // 标记日记已删除，停止所有错误处理
@@ -244,44 +244,44 @@ const Detail = () => {
   )
   
   // 详细调试信息
-  console.log('=== 删除按钮显示调试 ===', {
-    '用户信息': {
-      user: user,
-      userId: user?.id,
-      username: user?.username,
-      nickname: user?.nickname,
-      isAuthenticated: !!user
-    },
-    '日记信息': {
-      diary: diary,
-      diaryId: diary?.id,
-      authorId: diary?.authorId,
-      author: diary?.author,
-      title: diary?.title
-    },
-    '匹配结果': {
-      isAuthor: isAuthor,
-      userIdMatch: user?.id === diary?.authorId,
-      usernameMatch: user?.username === diary?.author,
-      nicknameMatch: user?.nickname === diary?.author,
-      stringIdMatch: user?.id && diary?.authorId && String(user.id) === String(diary.authorId)
-    },
-    '删除按钮应该显示': isAuthor ? '是' : '否'
-  })
+  // console.log('=== 删除按钮显示调试 ===', {
+  //   '用户信息': {
+  //     user: user,
+  //     userId: user?.id,
+  //     username: user?.username,
+  //     nickname: user?.nickname,
+  //     isAuthenticated: !!user
+  //   },
+  //   '日记信息': {
+  //     diary: diary,
+  //     diaryId: diary?.id,
+  //     authorId: diary?.authorId,
+  //     author: diary?.author,
+  //     title: diary?.title
+  //   },
+  //   '匹配结果': {
+  //     isAuthor: isAuthor,
+  //     userIdMatch: user?.id === diary?.authorId,
+  //     usernameMatch: user?.username === diary?.author,
+  //     nicknameMatch: user?.nickname === diary?.author,
+  //     stringIdMatch: user?.id && diary?.authorId && String(user.id) === String(diary.authorId)
+  //   },
+  //   '删除按钮应该显示': isAuthor ? '是' : '否'
+  // })
   
   // 强制显示删除按钮用于测试（临时）
   const forceShowDelete = true
-  console.log('强制显示删除按钮（测试用）:', forceShowDelete)
+  // console.log('强制显示删除按钮（测试用）:', forceShowDelete)
 
   // 图片加载错误处理函数
   const handleImageError = (e, index) => {
     // 如果日记已被删除，不显示错误提示
     if (isDeleted) {
-      console.log('日记已删除，忽略图片加载错误')
+      // console.log('日记已删除，忽略图片加载错误')
       return
     }
     
-    console.error(`图片${index + 1}加载失败:`, e.target.src)
+    // console.error(`图片${index + 1}加载失败:`, e.target.src)
     // 设置占位图
     e.target.src = getPlaceholderImage(`图片${index + 1}加载失败`)
     showToast(`图片${index + 1}加载失败`, 'error')
@@ -347,7 +347,7 @@ const Detail = () => {
                       src={processedImage} 
                       alt={`${diary.title} - 图片${index + 1}`}
                       onError={(e) => handleImageError(e, index)}
-                      onLoad={() => console.log(`图片${index + 1}加载成功`)}
+                      onLoad={() => {/* console.log(`图片${index + 1}加载成功`) */}}
                     />
                     <div className="image-overlay">
                       <span className="zoom-icon">🔍</span>

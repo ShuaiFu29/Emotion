@@ -19,7 +19,7 @@ export async function generateAvatarByAI(userInfo = {}) {
   // 从环境变量获取API key
   const apiKey = import.meta.env.VITE_ARK_API_KEY;
   
-  console.log('开始生成AI头像，用户信息:', { displayName, signature });
+  // console.log('开始生成AI头像，用户信息:', { displayName, signature });
   
   if (!apiKey) {
     throw new Error('API密钥未配置，请在.env.local文件中设置VITE_ARK_API_KEY');
@@ -32,7 +32,7 @@ export async function generateAvatarByAI(userInfo = {}) {
   // 生成高质量的图片提示词，避免人物相关关键词
   const prompt = `${imageDescription}, high quality, detailed, beautiful scenery, landscape photography, natural lighting, vivid colors, 4K resolution, masterpiece, no people, no human figures`;
   
-  console.log('发送给豆包文生图API的提示词:', prompt);
+  // console.log('发送给豆包文生图API的提示词:', prompt);
   
   try {
     // 调用豆包文生图API（通过代理）
@@ -60,14 +60,14 @@ export async function generateAvatarByAI(userInfo = {}) {
     }
     
     const data = await response.json();
-    console.log('豆包文生图API响应:', data);
+    // console.log('豆包文生图API响应:', data);
     
     if (!data.data || !data.data[0] || !data.data[0].url) {
       throw new Error('豆包文生图API返回数据格式异常');
     }
     
     const avatarUrl = data.data[0].url;
-    console.log('生成的头像URL:', avatarUrl);
+    // console.log('生成的头像URL:', avatarUrl);
     return avatarUrl;
     
   } catch (error) {
@@ -90,7 +90,7 @@ export async function withRetry(fn, maxRetries = 2, delay = 1500) {
     try {
       const result = await fn();
       if (i > 0) {
-        console.log(`重试成功，第${i}次重试`);
+        // console.log(`重试成功，第${i}次重试`);
       }
       return result;
     } catch (error) {

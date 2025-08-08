@@ -536,7 +536,7 @@ export const uploadFile = (file, options = {}) => {
           }
           
           resolve(response)
-        } catch (error) {
+        } catch {
           const parseError = new Error('响应解析失败')
           
           if (onError && typeof onError === 'function') {
@@ -647,7 +647,7 @@ export const downloadFile = (url, filename, options = {}) => {
       document.body.removeChild(link)
       
       resolve()
-    } catch (error) {
+    } catch {
       // 如果直接下载失败，尝试通过fetch下载
       fetch(url, {
         method,

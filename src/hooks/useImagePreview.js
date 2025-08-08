@@ -84,7 +84,7 @@ const useImagePreview = (images = [], options = {}) => {
   })
 
   const dragStartRef = useRef({ x: 0, y: 0 })
-  const dragPositionRef = useRef({ x: 0, y: 0 })
+  const _dragPositionRef = useRef({ x: 0, y: 0 })
   const mountedRef = useRef(true)
 
   /**

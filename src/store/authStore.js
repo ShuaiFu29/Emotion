@@ -19,12 +19,14 @@ const useAuthStore = create((set, get) => ({
       if (!isValid) {
         // 如果token无效，清除状态
         set({ token: null, isAuthenticated: false, loading: false })
+        localStorage.removeItem('currentUser')
       } else {
         set({ loading: false })
       }
     } else {
       // 没有token，确保状态为未认证
       set({ token: null, isAuthenticated: false, loading: false })
+      localStorage.removeItem('currentUser')
     }
   },
 
@@ -32,31 +34,37 @@ const useAuthStore = create((set, get) => ({
   login: async (credentials) => {
     set({ loading: true, error: null })
     try {
-      // 模拟API调用
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      })
+      // console.log('开始登录，凭据：', { username: credentials.username, hasPassword: !!credentials.password })
       
-      // 检查网络错误
-      if (!response.ok) {
-        throw new Error(`网络错误: ${response.status} ${response.statusText}`)
+      // 模拟延迟
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // 从localStorage获取已注册的用户
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]')
+      // console.log('已注册用户数量：', registeredUsers.length)
+      
+      // 查找匹配的用户（支持用户名或邮箱登录）
+      const user = registeredUsers.find(u => 
+        (u.username === credentials.username || u.email === credentials.username || 
+         u.username === credentials.email || u.email === credentials.email) && 
+        u.password === credentials.password
+      )
+      
+      if (!user) {
+        // console.log('登录失败：用户未找到或密码错误')
+        throw new Error('用户名或密码错误')
       }
       
-      const data = await response.json()
+      // console.log('登录成功，用户：', user.username)
       
-      // 检查业务错误
-      if (data.code !== 200) {
-        throw new Error(data.message || '登录失败')
-      }
-      
-      const { token, user } = data.data
+      // 生成简单的token
+      const token = btoa(JSON.stringify({ userId: user.id, timestamp: Date.now() }))
       
       // 存储token到cookie
       Cookies.set('token', token, { expires: 7 }) // 7天过期
+      
+      // 存储用户信息到localStorage
+      localStorage.setItem('currentUser', JSON.stringify(user))
       
       set({
         user,
@@ -67,8 +75,8 @@ const useAuthStore = create((set, get) => ({
       })
       
       return { success: true }
-    } catch (networkError) {
-      const errorMessage = networkError.message || '登录失败，请检查网络连接'
+    } catch (error) {
+      const errorMessage = error.message || '登录失败'
       set({
         loading: false,
         error: errorMessage
@@ -81,33 +89,54 @@ const useAuthStore = create((set, get) => ({
   register: async (userData) => {
     set({ loading: true, error: null })
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      })
+      // console.log('开始注册，用户数据：', { username: userData.username, email: userData.email })
       
-      // 检查网络错误
-      if (!response.ok) {
-        throw new Error(`网络错误: ${response.status} ${response.statusText}`)
+      // 模拟延迟
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // 从localStorage获取已注册的用户
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]')
+      // console.log('当前已注册用户数量：', registeredUsers.length)
+      
+      // 检查用户名和邮箱是否已存在
+      const existingUser = registeredUsers.find(u => 
+        u.username === userData.username || u.email === userData.email
+      )
+      
+      if (existingUser) {
+        // console.log('注册失败：用户名或邮箱已存在')
+        throw new Error('用户名或邮箱已存在')
       }
       
-      const data = await response.json()
+      // console.log('用户名和邮箱检查通过，创建新用户')
       
-      // 检查业务错误
-      if (data.code !== 200) {
-        throw new Error(data.message || '注册失败')
+      // 创建新用户
+      const newUser = {
+        id: Date.now().toString(),
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        nickname: userData.nickname || userData.username,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+        signature: '这个人很懒，什么都没留下~',
+        createdAt: new Date().toISOString()
       }
       
-      const { token, user } = data.data
+      // 保存到localStorage
+      registeredUsers.push(newUser)
+      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers))
+      
+      // 生成简单的token
+      const token = btoa(JSON.stringify({ userId: newUser.id, timestamp: Date.now() }))
       
       // 存储token到cookie
       Cookies.set('token', token, { expires: 7 })
       
+      // 存储用户信息到localStorage
+      localStorage.setItem('currentUser', JSON.stringify(newUser))
+      
       set({
-        user,
+        user: newUser,
         token,
         isAuthenticated: true,
         loading: false,
@@ -115,8 +144,8 @@ const useAuthStore = create((set, get) => ({
       })
       
       return { success: true }
-    } catch (networkError) {
-      const errorMessage = networkError.message || '注册失败，请检查网络连接'
+    } catch (error) {
+      const errorMessage = error.message || '注册失败'
       set({
         loading: false,
         error: errorMessage
@@ -179,32 +208,32 @@ const useAuthStore = create((set, get) => ({
     if (!token) return false
     
     try {
-      const response = await fetch('/api/auth/verify', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      // 解析token
+      const tokenData = JSON.parse(atob(token))
       
-      // 检查网络错误
-      if (!response.ok) {
-        console.warn(`Token验证网络错误: ${response.status} ${response.statusText}`)
+      // 检查token是否过期（7天）
+      const tokenAge = Date.now() - tokenData.timestamp
+      const maxAge = 7 * 24 * 60 * 60 * 1000 // 7天
+      
+      if (tokenAge > maxAge) {
+        console.warn('Token已过期')
         get().logout()
         return false
       }
       
-      const data = await response.json()
+      // 从localStorage获取用户信息
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
       
-      // 检查业务错误
-      if (data.code !== 200) {
-        console.warn('Token验证失败:', data.message)
+      if (!currentUser || currentUser.id !== tokenData.userId) {
+        console.warn('用户信息不匹配')
         get().logout()
         return false
       }
       
-      set({ user: data.data.user, isAuthenticated: true })
+      set({ user: currentUser, isAuthenticated: true })
       return true
-    } catch (networkError) {
-      console.warn('Token验证异常:', networkError.message)
+    } catch (error) {
+      console.warn('Token验证异常:', error.message)
       get().logout()
       return false
     }
@@ -214,42 +243,37 @@ const useAuthStore = create((set, get) => ({
   updateUserInfo: async (userInfo) => {
     set({ loading: true, error: null })
     try {
-      const { token } = get()
-      if (!token) {
+      const { user, token } = get()
+      if (!token || !user) {
         throw new Error('未登录，无法更新用户信息')
       }
       
-      const response = await fetch('/api/auth/update-profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(userInfo),
-      })
+      // 模拟延迟
+      await new Promise(resolve => setTimeout(resolve, 500))
       
-      // 检查网络错误
-      if (!response.ok) {
-        throw new Error(`网络错误: ${response.status} ${response.statusText}`)
+      // 更新用户信息
+      const updatedUser = { ...user, ...userInfo }
+      
+      // 更新localStorage中的当前用户信息
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+      
+      // 更新注册用户列表中的用户信息
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]')
+      const userIndex = registeredUsers.findIndex(u => u.id === user.id)
+      if (userIndex !== -1) {
+        registeredUsers[userIndex] = updatedUser
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers))
       }
       
-      const data = await response.json()
-      
-      // 检查业务错误
-      if (data.code !== 200) {
-        throw new Error(data.message || '更新用户信息失败')
-      }
-      
-      // 更新本地用户信息 - 使用后端返回的最新数据
       set({
-        user: data.data.user, // 使用后端返回的完整用户数据
+        user: updatedUser,
         loading: false,
         error: null
       })
       
       return { success: true }
-    } catch (networkError) {
-      const errorMessage = networkError.message || '更新用户信息失败，请检查网络连接'
+    } catch (error) {
+      const errorMessage = error.message || '更新用户信息失败'
       set({
         loading: false,
         error: errorMessage

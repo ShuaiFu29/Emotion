@@ -29,7 +29,7 @@ const MainLayout = () => {
   const location = useLocation()
   useEffect(() => {
     // es6 的使用
-    console.log(location.pathname)
+    // console.log(location.pathname)
     const index = tabs.findIndex(tab =>
       location.pathname.startsWith(tab.path)
     )

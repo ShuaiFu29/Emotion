@@ -64,15 +64,21 @@ const useToast = () => {
 
     queueTimeoutRef.current = setTimeout(() => {
       setToastQueue(prevQueue => {
-        if (prevQueue.length > 0 && !toast.show) {
-          const nextToast = prevQueue[0]
-          setToast(nextToast)
+        setToast(currentToast => {
+          if (prevQueue.length > 0 && !currentToast.show) {
+            const nextToast = prevQueue[0]
+            return nextToast
+          }
+          return currentToast
+        })
+        
+        if (prevQueue.length > 0) {
           return prevQueue.slice(1)
         }
         return prevQueue
       })
     }, 100)
-  }, [toast.show])
+  }, [])
 
   /**
    * 显示Toast消息
@@ -99,61 +105,64 @@ const useToast = () => {
       id: generateId()
     }
 
-    // 如果当前有Toast显示，加入队列
-    if (toast.show) {
-      setToastQueue(prevQueue => [...prevQueue, newToast])
-      return
-    }
+    // 检查当前是否有Toast显示，如果有则加入队列
+    setToast(currentToast => {
+      if (currentToast.show) {
+        setToastQueue(prevQueue => [...prevQueue, newToast])
+        return currentToast
+      }
+      
+      // 清除之前的定时器
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
 
-    // 清除之前的定时器
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    // 显示新Toast
-    setToast(newToast)
-
-    // 自动关闭
-    if (autoClose && duration > 0) {
-      timeoutRef.current = setTimeout(() => {
-        hideToast()
-        if (onClose && typeof onClose === 'function') {
-          try {
-            onClose()
-          } catch (error) {
-            console.error('useToast: onClose callback error:', error)
+      // 自动关闭
+      if (autoClose && duration > 0) {
+        timeoutRef.current = setTimeout(() => {
+          hideToast()
+          if (onClose && typeof onClose === 'function') {
+            try {
+              onClose()
+            } catch (error) {
+              console.error('useToast: onClose callback error:', error)
+            }
           }
-        }
-      }, duration)
-    }
-  }, [toast.show])
+        }, duration)
+      }
+      
+      return newToast
+    })
+  }, [generateId, hideToast])
 
   /**
    * 隐藏当前Toast
    * @param {string} [toastId] - 指定要隐藏的Toast ID，不传则隐藏当前Toast
    */
   const hideToast = useCallback((toastId) => {
-    if (toastId && toast.id !== toastId) {
-      // 如果指定了ID但不匹配当前Toast，从队列中移除
-      setToastQueue(prevQueue => prevQueue.filter(t => t.id !== toastId))
-      return
-    }
+    setToast(currentToast => {
+      if (toastId && currentToast.id !== toastId) {
+        // 如果指定了ID但不匹配当前Toast，从队列中移除
+        setToastQueue(prevQueue => prevQueue.filter(t => t.id !== toastId))
+        return currentToast
+      }
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
 
-    setToast({
-      show: false,
-      message: '',
-      type: 'info',
-      id: ''
+      // 处理队列中的下一个Toast
+      processQueue()
+      
+      return {
+        show: false,
+        message: '',
+        type: 'info',
+        id: ''
+      }
     })
-
-    // 处理队列中的下一个Toast
-    processQueue()
-  }, [toast.id, processQueue])
+  }, [processQueue])
 
   /**
    * 清空所有Toast（包括队列）

@@ -61,9 +61,9 @@ const useConfirmDialog = (defaultOptions = {}) => {
     closeOnOverlay: defaultCloseOnOverlay = true,
     autoFocus: defaultAutoFocus = true,
     autoCloseDelay: defaultAutoCloseDelay = 0,
-    onConfirm: defaultOnConfirm,
-    onCancel: defaultOnCancel,
-    onClose: defaultOnClose,
+    onConfirm: _defaultOnConfirm,
+    onCancel: _defaultOnCancel,
+    onClose: _defaultOnClose,
     customStyles: defaultCustomStyles = {},
     customContent: defaultCustomContent
   } = defaultOptions
@@ -98,6 +98,40 @@ const useConfirmDialog = (defaultOptions = {}) => {
   }, [])
 
   /**
+   * 取消操作
+   */
+  const cancel = useCallback(() => {
+    try {
+      const { onCancel } = optionsRef.current
+      
+      // 执行取消回调
+      if (onCancel && typeof onCancel === 'function') {
+        try {
+          onCancel()
+        } catch (error) {
+          console.error('useConfirmDialog: onCancel callback failed:', error)
+        }
+      }
+
+      // 关闭对话框
+      hideConfirm()
+
+      // 解析Promise为false
+      if (resolveRef.current) {
+        resolveRef.current(false)
+        resolveRef.current = null
+      }
+    } catch (error) {
+      console.error('useConfirmDialog: cancel failed:', error)
+      
+      if (rejectRef.current) {
+        rejectRef.current(error)
+        rejectRef.current = null
+      }
+    }
+  }, [hideConfirm])
+
+  /**
    * 设置自动关闭定时器
    * @param {number} delay - 延迟时间
    */
@@ -110,7 +144,7 @@ const useConfirmDialog = (defaultOptions = {}) => {
         }
       }, delay)
     }
-  }, [clearAutoCloseTimer])
+  }, [clearAutoCloseTimer, cancel])
 
   /**
    * 显示确认对话框
@@ -273,40 +307,7 @@ const useConfirmDialog = (defaultOptions = {}) => {
     }
   }, [hideConfirm])
 
-  /**
-   * 取消操作
-   */
-  const cancel = useCallback(() => {
-    try {
-      const { onCancel } = optionsRef.current
-      
-      // 执行取消回调
-      if (onCancel && typeof onCancel === 'function') {
-        try {
-          onCancel()
-        } catch (error) {
-          console.error('useConfirmDialog: onCancel callback failed:', error)
-        }
-      }
 
-      // 关闭对话框
-      hideConfirm()
-
-      // 解析Promise为false
-      if (resolveRef.current) {
-        resolveRef.current(false)
-        resolveRef.current = null
-      }
-
-    } catch (error) {
-      console.error('useConfirmDialog: cancel failed:', error)
-      
-      if (rejectRef.current) {
-        rejectRef.current(error)
-        rejectRef.current = null
-      }
-    }
-  }, [hideConfirm])
 
   /**
    * 设置加载状态

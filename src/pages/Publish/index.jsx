@@ -49,13 +49,13 @@ const Publish = () => {
       const reader = new FileReader()
       reader.onload = (e) => {
         const base64 = e.target.result
-        console.log('图片转换为base64:', {
-          fileName: file.name,
-          fileSize: file.size,
-          base64Length: base64.length,
-          isBase64: base64.startsWith('data:'),
-          preview: base64.substring(0, 50) + '...'
-        })
+        // console.log('图片转换为base64:', {
+        //   fileName: file.name,
+        //   fileSize: file.size,
+        //   base64Length: base64.length,
+        //   isBase64: base64.startsWith('data:'),
+        //   preview: base64.substring(0, 50) + '...'
+        // })
         
         // 确保只存储base64数据，不保留file对象
         const newImage = {
@@ -108,14 +108,14 @@ const Publish = () => {
     setPublishing(true)
     try {
       const imageData = images.map(img => img.content || img.url)
-      console.log('准备发布的图片数据:', imageData.map((img, index) => ({
-        index,
-        type: typeof img,
-        isBase64: img && img.startsWith && img.startsWith('data:'),
-        isBlob: img && img.startsWith && img.startsWith('blob:'),
-        length: img ? img.length : 0,
-        preview: img ? img.substring(0, 50) + '...' : 'null'
-      })))
+      // console.log('准备发布的图片数据:', imageData.map((img, index) => ({
+      //   index,
+      //   type: typeof img,
+      //   isBase64: img && img.startsWith && img.startsWith('data:'),
+      //   isBlob: img && img.startsWith && img.startsWith('blob:'),
+      //   length: img ? img.length : 0,
+      //   preview: img ? img.substring(0, 50) + '...' : 'null'
+      // })))
       
       const diaryData = {
           title: title.trim(),
@@ -127,9 +127,9 @@ const Publish = () => {
           author: user?.username || user?.nickname || '匿名用户'
         }
 
-      console.log('开始发布日记:', diaryData)
+      // console.log('开始发布日记:', diaryData)
       const result = await createDiary(diaryData)
-      console.log('发布结果:', result)
+      // console.log('发布结果:', result)
       
       if (result.success) {
         showToast('🎉 发布成功！', 'success')
@@ -143,7 +143,7 @@ const Publish = () => {
               data: result.data
             })
             channel.close()
-            console.log('跨标签页通信发送成功')
+            // console.log('跨标签页通信发送成功')
           }
         } catch (broadcastError) {
           console.error('跨标签页通信失败:', broadcastError)
@@ -163,7 +163,7 @@ const Publish = () => {
               }, 2000)
             }
           } catch {
-            console.log('无法自动关闭标签页，跳转到主页')
+            // console.log('无法自动关闭标签页，跳转到主页')
             showToast('正在返回主页...', 'success')
             setTimeout(() => {
               window.location.href = '/'
