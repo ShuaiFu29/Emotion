@@ -365,6 +365,7 @@ const Chat = () => {
             autosize
             maxlength={1000}
             showWordLimit
+            style={{ height: '40px' }}
           />
           <Button
             type="primary"
@@ -372,6 +373,7 @@ const Chat = () => {
             onClick={handleSendMessage}
             disabled={isLoading || !inputMessage.trim()}
             className={`send-btn ${inputMessage.trim() ? 'has-content' : ''}`}
+            style={{ height: '40px', minHeight: '40px' }}
           >
             {isLoading ? '发送中...' : '发送'}
           </Button>
